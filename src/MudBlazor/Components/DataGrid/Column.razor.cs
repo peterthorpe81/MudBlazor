@@ -277,7 +277,25 @@ namespace MudBlazor
         private IComparer<object> _comparer = null;
         private Func<T, object> _sortBy;
         internal Func<T, object> groupBy;
-        internal bool hidden;
+        private bool _isHidden;
+        internal bool IsHidden
+        {
+            get
+            {
+                return HiddenChanged.HasDelegate ? Hidden : _isHidden;
+            }
+            set
+            {
+                if (HiddenChanged.HasDelegate)
+                {
+                    Hidden = value;
+                    HiddenChanged.InvokeAsync(Hidden);
+                }
+                else
+                    _isHidden = value;
+            }
+        }
+
         internal HeaderContext<T> headerContext;
         private FilterContext<T> filterContext;
         internal FooterContext<T> footerContext;
@@ -303,7 +321,7 @@ namespace MudBlazor
 
         protected override void OnInitialized()
         {
-            hidden = Hidden;
+            IsHidden = Hidden;
             groupBy = GroupBy;
 
             if (groupable && Grouping)
@@ -389,20 +407,20 @@ namespace MudBlazor
 
         public async Task HideAsync()
         {
-            hidden = true;
-            await HiddenChanged.InvokeAsync(hidden);
+            IsHidden = true;
+            await HiddenChanged.InvokeAsync(IsHidden);
         }
 
         public async Task ShowAsync()
         {
-            hidden = false;
-            await HiddenChanged.InvokeAsync(hidden);
+            IsHidden = false;
+            await HiddenChanged.InvokeAsync(IsHidden);
         }
 
         public async Task ToggleAsync()
         {
-            hidden = !hidden;
-            await HiddenChanged.InvokeAsync(hidden);
+            IsHidden = !IsHidden;
+            await HiddenChanged.InvokeAsync(IsHidden);
             ((IMudStateHasChanged)DataGrid).StateHasChanged();
         }
 
