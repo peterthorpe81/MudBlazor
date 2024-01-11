@@ -9,7 +9,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
-using MudBlazor.Components.DataGrid;
 using MudBlazor.Interfaces;
 using MudBlazor.Utilities;
 
@@ -278,8 +277,28 @@ namespace MudBlazor
         private IComparer<object> _comparer = null;
         private Func<T, object> _sortBy;
         internal Func<T, object> groupBy;
-
-        public ColumnState<T> State { get; private set; }
+        private bool _isHidden;
+        private bool? _initiallyHidden;
+        internal bool IsHidden
+        {
+            get
+            {
+                return HiddenChanged.HasDelegate || (_initiallyHidden ?? Hidden) != Hidden ? Hidden : _isHidden;
+            }
+            set
+            {
+                if (HiddenChanged.HasDelegate)
+                {
+                    Hidden = value;
+                    HiddenChanged.InvokeAsync(Hidden);
+                }
+                else if (_initiallyHidden is null || _initiallyHidden != Hidden)
+                {
+                    _initiallyHidden = null;
+                    _isHidden = value;
+                }
+            }
+        }
 
         internal HeaderContext<T> headerContext;
         private FilterContext<T> filterContext;
@@ -303,16 +322,16 @@ namespace MudBlazor
                 return filterContext;
             }
         }
-
+        
         protected override async Task OnParametersSetAsync()
         {
             await base.OnParametersSetAsync();
-            State.SyncParameters(Hidden);
+            IsHidden = Hidden;
         }
         
         protected override void OnInitialized()
         {
-            State = new(new(Hidden, HiddenChanged));
+            _initiallyHidden = IsHidden = Hidden;
             groupBy = GroupBy;
 
             if (groupable && Grouping)
@@ -398,20 +417,20 @@ namespace MudBlazor
 
         public async Task HideAsync()
         {
-            State.Hidden = true;
-            await HiddenChanged.InvokeAsync(State.Hidden);
+            IsHidden = true;
+            await HiddenChanged.InvokeAsync(IsHidden);
         }
 
         public async Task ShowAsync()
         {
-            State.Hidden = false;
-            await HiddenChanged.InvokeAsync(State.Hidden);
+            IsHidden = false;
+            await HiddenChanged.InvokeAsync(IsHidden);
         }
 
         public async Task ToggleAsync()
         {
-            State.Hidden = !State.Hidden;
-            await HiddenChanged.InvokeAsync(State.Hidden);
+            IsHidden = !IsHidden;
+            await HiddenChanged.InvokeAsync(IsHidden);
             ((IMudStateHasChanged)DataGrid).StateHasChanged();
         }
 
