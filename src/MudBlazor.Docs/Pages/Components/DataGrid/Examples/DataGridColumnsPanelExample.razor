@@ -12,7 +12,7 @@
         <PropertyColumn Property="x => x.Name" Title="Name" Hidden="false" DragAndDropEnabled="true" Groupable="true" Sortable="true" Filterable="true" />
         <PropertyColumn Property="x => x.Position" Filterable="false" Hideable="false" />
         <PropertyColumn Property="x => x.Molar" Title="Molar mass" @bind-Hidden="@_hideMolar" Hideable="true" />
-        <PropertyColumn Property="x => x.Group" Title="Category" />
+        <PropertyColumn Property="x => x.Group" Hidden="_hideGroup" Title="Category" />
         <TemplateColumn Title="Template" />
     </Columns>
     <PagerContent>
@@ -47,6 +47,7 @@
     bool _filterable = true;
     bool _groupable = true;
     bool _hideMolar = false;
+    bool _hideGroup = false;
     public MudDataGrid<Element> grid = null;
 
     protected override async Task OnInitializedAsync()
