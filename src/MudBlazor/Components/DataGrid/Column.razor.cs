@@ -292,7 +292,10 @@ namespace MudBlazor
                     _isHidden = value;
                     Hidden = value;
                     if (HiddenChanged.HasDelegate)
+                    {
+                        _lastHiddenState = value;
                         HiddenChanged.InvokeAsync(value);
+                    }
                 }
             }
         }
