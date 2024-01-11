@@ -278,8 +278,28 @@ namespace MudBlazor
         private IComparer<object> _comparer = null;
         private Func<T, object> _sortBy;
         internal Func<T, object> groupBy;
-
-        public ColumnState<T> State { get; private set; }
+        private bool _isHidden;
+        private bool? _lastHiddenState;
+        internal bool IsHidden
+        {
+            get
+            {
+                return _isHidden;
+            }
+            set
+            {
+                if (_isHidden != value)
+                {
+                    _isHidden = value;
+                    Hidden = value;
+                    if (HiddenChanged.HasDelegate)
+                    {
+                        _lastHiddenState = value;
+                        HiddenChanged.InvokeAsync(value);
+                    }
+                }
+            }
+        }
 
         internal HeaderContext<T> headerContext;
         private FilterContext<T> filterContext;
