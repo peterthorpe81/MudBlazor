@@ -278,24 +278,21 @@ namespace MudBlazor
         private Func<T, object> _sortBy;
         internal Func<T, object> groupBy;
         private bool _isHidden;
-        private bool? _initiallyHidden;
+        private bool? _lastHiddenState;
         internal bool IsHidden
         {
             get
             {
-                return HiddenChanged.HasDelegate || (_initiallyHidden ?? Hidden) != Hidden ? Hidden : _isHidden;
+                return _isHidden;
             }
             set
             {
-                if (HiddenChanged.HasDelegate)
+                if (_isHidden != value)
                 {
-                    Hidden = value;
-                    HiddenChanged.InvokeAsync(Hidden);
-                }
-                else if (_initiallyHidden is null || _initiallyHidden != Hidden)
-                {
-                    _initiallyHidden = null;
                     _isHidden = value;
+                    Hidden = value;
+                    if (HiddenChanged.HasDelegate)
+                        HiddenChanged.InvokeAsync(value);
                 }
             }
         }
@@ -322,16 +319,17 @@ namespace MudBlazor
                 return filterContext;
             }
         }
-        
+
         protected override async Task OnParametersSetAsync()
         {
             await base.OnParametersSetAsync();
-            IsHidden = Hidden;
+            if (_lastHiddenState != Hidden)
+                _lastHiddenState = _isHidden = Hidden;
         }
         
         protected override void OnInitialized()
         {
-            _initiallyHidden = IsHidden = Hidden;
+            _lastHiddenState = _isHidden = Hidden;
             groupBy = GroupBy;
 
             if (groupable && Grouping)
