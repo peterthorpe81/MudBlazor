@@ -9,6 +9,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
+using MudBlazor.Components.DataGrid;
 using MudBlazor.Interfaces;
 using MudBlazor.Utilities;
 
@@ -127,7 +128,7 @@ namespace MudBlazor
         [Parameter] public RenderFragment<FilterContext<T>> FilterTemplate { get; set; }
 
         public string Identifier { get; set; }
-        
+
 
         private CultureInfo _culture;
         /// <summary>
@@ -277,29 +278,7 @@ namespace MudBlazor
         private IComparer<object> _comparer = null;
         private Func<T, object> _sortBy;
         internal Func<T, object> groupBy;
-        private bool _isHidden;
-        private bool? _initiallyHidden;
-        internal bool IsHidden
-        {
-            get
-            {
-                return HiddenChanged.HasDelegate || (_initiallyHidden ?? Hidden) != Hidden ? Hidden : _isHidden;
-            }
-            set
-            {
-                if (HiddenChanged.HasDelegate)
-                {
-                    Hidden = value;
-                    HiddenChanged.InvokeAsync(Hidden);
-                }
-                else if (_initiallyHidden is null || _initiallyHidden != Hidden)
-                {
-                    _initiallyHidden = null;
-                    _isHidden = value;
-                }
-            }
-        }
-
+        public ColumnState<T> State { get; private set; }
         internal HeaderContext<T> headerContext;
         private FilterContext<T> filterContext;
         internal FooterContext<T> footerContext;
@@ -328,10 +307,16 @@ namespace MudBlazor
             await base.OnParametersSetAsync();
             IsHidden = Hidden;
         }
-        
+
+        protected override async Task OnParametersSetAsync()
+        {
+            await base.OnParametersSetAsync();
+            State.SyncParameters();
+        }
+
         protected override void OnInitialized()
         {
-            _initiallyHidden = IsHidden = Hidden;
+            State = new(this);
             groupBy = GroupBy;
 
             if (groupable && Grouping)
@@ -417,20 +402,20 @@ namespace MudBlazor
 
         public async Task HideAsync()
         {
-            IsHidden = true;
-            await HiddenChanged.InvokeAsync(IsHidden);
+            State.Hidden = true;
+            await HiddenChanged.InvokeAsync(State.Hidden);
         }
 
         public async Task ShowAsync()
         {
-            IsHidden = false;
-            await HiddenChanged.InvokeAsync(IsHidden);
+            State.Hidden = false;
+            await HiddenChanged.InvokeAsync(State.Hidden);
         }
 
         public async Task ToggleAsync()
         {
-            IsHidden = !IsHidden;
-            await HiddenChanged.InvokeAsync(IsHidden);
+            State.Hidden = !State.Hidden;
+            await HiddenChanged.InvokeAsync(State.Hidden);
             ((IMudStateHasChanged)DataGrid).StateHasChanged();
         }
 
