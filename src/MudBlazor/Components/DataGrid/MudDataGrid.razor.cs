@@ -1358,6 +1358,17 @@ namespace MudBlazor
             StateHasChanged();
         }
 
+        /// <summary>
+        /// Gets a cell used in rendering
+        /// </summary>
+        /// <param name="column"></param>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        public Cell<T> GetCell(Column<T> column, T item)
+        {
+            return new Cell<T>(this, column, item);
+        }
+
         internal async Task HideAllColumnsAsync()
         {
             foreach (var column in RenderedColumns)

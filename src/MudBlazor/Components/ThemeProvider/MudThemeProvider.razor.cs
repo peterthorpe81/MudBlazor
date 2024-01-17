@@ -101,7 +101,7 @@ namespace MudBlazor
             Theme ??= new MudTheme();
         }
 
-        protected string BuildTheme()
+        public string BuildTheme()
         {
             Theme ??= new MudTheme();
             var theme = new StringBuilder();

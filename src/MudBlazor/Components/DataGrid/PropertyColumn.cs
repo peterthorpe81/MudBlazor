@@ -27,9 +27,6 @@ namespace MudBlazor
         [EditorRequired]
         public Expression<Func<T, TProperty>> Property { get; set; } = Expression.Lambda<Func<T, TProperty>>(Expression.Default(typeof(TProperty)), Expression.Parameter(typeof(T)));
 
-        [Parameter]
-        public string? Format { get; set; }
-
         protected override void OnParametersSet()
         {
             // We have to do a bit of pre-processing on the lambda expression. Only do that if it's new or changed.
@@ -61,9 +58,6 @@ namespace MudBlazor
 
         public override string? PropertyName
             => _propertyName;
-
-        protected internal override string? ContentFormat
-            => Format;
 
         protected internal override object? CellContent(T item)
             => _cellContentFunc!(item);

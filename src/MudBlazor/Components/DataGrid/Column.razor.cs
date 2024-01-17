@@ -144,6 +144,12 @@ namespace MudBlazor
                 _culture = value;
             }
         }
+
+        #nullable enable
+        [Parameter]
+        [Category(CategoryTypes.Table.Appearance)]
+        public string? Format { get; set; }
+        #nullable disable
         #endregion
 
         #region Cell Properties
@@ -301,12 +307,6 @@ namespace MudBlazor
                 return filterContext;
             }
         }
-        
-        protected override async Task OnParametersSetAsync()
-        {
-            await base.OnParametersSetAsync();
-            IsHidden = Hidden;
-        }
 
         protected override async Task OnParametersSetAsync()
         {
@@ -419,6 +419,16 @@ namespace MudBlazor
             ((IMudStateHasChanged)DataGrid).StateHasChanged();
         }
 
+        /// <summary>
+        /// Gets a cell used in rendering
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        public Cell<T> GetCell(T item)
+        {
+            return DataGrid.GetCell(this, item);
+        }
+
 
         #region Abstract Members
 
@@ -432,10 +442,6 @@ namespace MudBlazor
         }
 
         public virtual string PropertyName { get; }
-
-#nullable enable
-        protected internal virtual string? ContentFormat { get; }
-#nullable disable
 
         protected internal abstract object CellContent(T item);
 

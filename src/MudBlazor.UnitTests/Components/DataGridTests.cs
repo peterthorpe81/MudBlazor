@@ -2483,14 +2483,14 @@ namespace MudBlazor.UnitTests.Components
             var column = dataGrid.Instance.RenderedColumns.First();
             var cell = new Cell<DataGridCellContextTest.Model>(dataGrid.Instance, column, item);
 
-            cell._cellContext.IsSelected.Should().Be(false);
-            await cell._cellContext.Actions.SetSelectedItemAsync(true);
-            cell._cellContext.IsSelected.Should().Be(true);
+            cell.CellContext.IsSelected.Should().Be(false);
+            await cell.CellContext.Actions.SetSelectedItemAsync(true);
+            cell.CellContext.IsSelected.Should().Be(true);
 
-            await cell._cellContext.Actions.ToggleHierarchyVisibilityForItemAsync();
-            cell._cellContext.OpenHierarchies.Should().Contain(item);
-            await cell._cellContext.Actions.ToggleHierarchyVisibilityForItemAsync();
-            cell._cellContext.OpenHierarchies.Should().NotContain(item);
+            await cell.CellContext.Actions.ToggleHierarchyVisibilityForItemAsync();
+            cell.CellContext.OpenHierarchies.Should().Contain(item);
+            await cell.CellContext.Actions.ToggleHierarchyVisibilityForItemAsync();
+            cell.CellContext.OpenHierarchies.Should().NotContain(item);
         }
 
         [Test]

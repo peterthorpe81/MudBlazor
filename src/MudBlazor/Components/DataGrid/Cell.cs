@@ -10,7 +10,15 @@ using MudBlazor.Utilities;
 namespace MudBlazor
 {
 #nullable enable
-    internal class Cell<T>
+    /*public class Cell
+    {
+        public static Cell<T> Create<T>(MudDataGrid<T> dataGrid, Column<T> column, T item)
+        {
+            return new Cell<T>(dataGrid, column, item);
+        }
+    }*/
+
+    public class Cell<T>
     {
         private readonly MudDataGrid<T> _dataGrid;
         private readonly Column<T> _column;
@@ -18,19 +26,20 @@ namespace MudBlazor
         internal string? _valueString;
         internal double? _valueNumber;
         internal bool _isEditing;
-        internal CellContext<T> _cellContext;
 
         #region Computed Properties
 
-        internal object? ComputedValue
+        public object? ComputedValue
         {
             get
             {
                 return _column.CellContent(_item);
             }
-        }
+        }              
+        
+        public CellContext<T> CellContext { get; internal set; }
 
-        internal string computedClass
+        public string ComputedClass
         {
             get
             {
@@ -44,7 +53,8 @@ namespace MudBlazor
                     .Build();
             }
         }
-        internal string computedStyle
+
+        public string ComputedStyle
         {
             get
             {
@@ -66,7 +76,7 @@ namespace MudBlazor
             OnStartedEditingItem();
 
             // Create the CellContext
-            _cellContext = new CellContext<T>(_dataGrid, _item);
+            CellContext = new CellContext<T>(_dataGrid, _item);
         }
 
         public async Task StringValueChangedAsync(string value)
