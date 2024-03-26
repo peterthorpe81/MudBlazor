@@ -1,0 +1,32 @@
+﻿@using System.Net.Http.Json
+@using MudBlazor.Examples.Data.Models
+@using MudBlazor.Pivot
+@namespace MudBlazor.Docs.Examples
+@inject HttpClient httpClient
+
+@if (ready)
+{
+    <MudPivotGrid T="Element" @ref="pivot" Items="@_elements" Columns=@Columns Rows="@Rows" Measures="@Measures" Options="@pivotTableRenderOption">   </MudPivotGrid>
+}
+
+
+@code {
+    private IEnumerable<Element> _elements = new List<Element>();
+
+    public List<PivotColumn<Element>> Columns { get; set; } = new List<PivotColumn<Element>>();
+    public List<PivotColumn<Element>> Rows { get; set; } = new List<PivotColumn<Element>>();
+    public List<PivotMeasure<Element>> Measures { get; set; } = new List<PivotMeasure<Element>>();
+    public PivotTableRenderOption<Element> pivotTableRenderOption = new MudBlazor.PivotTableRenderOption<Element>();
+
+    public MudPivotGrid<Element> pivot = null;
+    public bool ready = false;
+    protected override async Task OnInitializedAsync()
+    {
+        _elements = await httpClient.GetFromJsonAsync<List<Element>>("webapi/periodictable");
+
+        Columns = PivotColumn<Element>.Build();
+        Rows = PivotColumn<Element>.Build(nameof(Element.Group), nameof(Element.Name));
+        Measures.Add(PivotMeasure<Element>.Sum(nameof(Element.Molar)));
+        ready = true;
+    }
+}

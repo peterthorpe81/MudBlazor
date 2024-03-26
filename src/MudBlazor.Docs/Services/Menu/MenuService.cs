@@ -57,6 +57,7 @@ namespace MudBlazor.Docs.Services
             .AddItem("Skeleton", typeof(MudSkeleton))
             .AddItem("Table", typeof(MudTable<T>), typeof(MudTablePager))
             .AddItem("Data Grid", typeof(MudDataGrid<T>))
+            .AddItem("Pivot Grid", typeof(MudPivotGrid<T>))
             .AddItem("Simple Table", typeof(MudSimpleTable))
             .AddItem("Tooltip", typeof(MudTooltip))
             .AddItem("Typography", typeof(MudText))
