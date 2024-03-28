@@ -41,7 +41,7 @@ namespace MudBlazor
                 return defaultCellRender(pivot, row, col, measure);
             }
         }
-        public PivotAxisHeaderRenderOptions<T> HeaderCellOption { get; private set; } = new PivotAxisHeaderRenderOptions<T>();
+        //public PivotAxisHeaderRenderOptions<T> HeaderCellOption { get; private set; } = new PivotAxisHeaderRenderOptions<T>();
     }
 
     public class PivotAxisRenderOption {
@@ -50,7 +50,7 @@ namespace MudBlazor
         public string TotalTitle { get; set; } = "GrandTotal";
         public OutputPosition TotalPosition { get; set; } = OutputPosition.Below;
     }
-    public class PivotAxisHeaderRenderOptions<T> {
+    /*public class PivotAxisHeaderRenderOptions<T> {
         private Dictionary<PivotColumn<T>, PivotAxisRenderOption> options = new Dictionary<PivotColumn<T>, PivotAxisRenderOption>();
 
 #pragma warning disable CA1043 // インデクサーには整数または文字列引数を使用します
@@ -66,6 +66,6 @@ namespace MudBlazor
                 return options[index];
             }
         }
-    }
+    }*/
 
 }

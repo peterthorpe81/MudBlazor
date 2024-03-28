@@ -1,0 +1,144 @@
+
+//.mud-pivot-grid {
+//
+//  @mixin cell() {
+//    border: 1px solid var(--mud-palette-table-lines);
+//  }
+//
+//  .mud-field {
+//    @include cell;
+//  }
+//
+//  .mud-field-title {
+//    @include cell;
+//  }
+//
+//  .mud-field-subtotal {
+//    @include cell;
+//    border: 1px solid var(--mud-palette-table-lines);
+//  }
+//
+//  .mud-field-subtotal {
+//    @include cell;
+//    border: 1px solid var(--mud-palette-table-lines);
+//  }
+//}
+
+
+
+
+
+
+
+.mud-pivot-grid {
+  //display: table;
+  //  border-collapse: separate;
+  //  border-spacing: 0px;
+  $ColHeaderBaseColor: var(--mud-palette-primary);
+  $ColHeaderTextColor: var(--mud-palette-primary-text);
+
+  $RowHeaderBaseColor: var(--mud-palette-secondary);
+  $RowHeaderTextColor: var(--mud-palette-secondary-text);
+
+  $BorderColor: #ddd;
+  $measureTitleColor: hsl(from var(--mud-palette-primary) h s calc(l + 10%));
+  $measureTitleTextColor: var(--mud-palette-primary-text);
+
+  @mixin Cell($CellColor, $TextColor) {
+    color: $TextColor;
+    background: $CellColor;
+  }
+
+  @mixin headerRowMixin($CellColor, $TextColor) {
+    th {
+      color: var(--mud-palette-primary-text);
+    }
+
+    .coltitle {
+      background-color: hsl(from $CellColor h s calc(l - 5%));
+    }
+
+    .cell {
+      @include Cell($CellColor, $TextColor);
+    }
+
+    .colGrandTotal {
+      @include Cell(hsl(from $CellColor h s calc(l - 10%)), $TextColor);
+    }
+  }
+
+
+
+  .number {
+    // text-align: right;
+  }
+
+  .rowtitle {
+    @include Cell(hsl(from $RowHeaderBaseColor h s calc(l - 10%)), $RowHeaderTextColor);
+  }
+
+  th, td {
+    //padding: 5px;
+    //white-space: nowrap;
+  }
+
+  .cornerHeader {
+    //background-color: white;
+  }
+
+
+
+  tr.headerRow:nth-child(1) {
+    @include headerRowMixin($ColHeaderBaseColor, $ColHeaderTextColor)
+  }
+
+  tr.headerRow:nth-child(2) {
+    @include headerRowMixin(hsl(from $ColHeaderBaseColor h s calc(l + 10%)), $ColHeaderTextColor);
+  }
+
+  tr.headerRow:nth-child(3) {
+    @include headerRowMixin(hsl(from $ColHeaderBaseColor h s calc(l + 20%)), $ColHeaderTextColor);
+  }
+
+  tr.headerRow:nth-child(4) {
+    @include headerRowMixin(hsl(from $ColHeaderBaseColor h s calc(l + 30%)), $ColHeaderTextColor);
+  }
+
+  .measureTitle {
+    @include Cell($measureTitleColor, $measureTitleTextColor);
+    white-space: nowrap;
+  }
+
+  tr.dataRow {
+    td, th {
+      //border-bottom: $BorderColor 1px solid;
+    }
+
+    &:hover {
+      //background-color: #eee;
+    }
+
+    th.cell {
+      //vertical-align: top;
+      //border-right: #ccc 1px solid;
+      //border-bottom: #ccc 1px solid;
+
+      &.ch-0 {
+        @include Cell(hsl(from $RowHeaderBaseColor h s calc(l + 10%)), $RowHeaderTextColor);
+      }
+
+      &.ch-1 {
+        @include Cell(hsl(from $RowHeaderBaseColor h s calc(l + 20%)), $RowHeaderTextColor);
+      }
+
+      &.ch-2 {
+        @include Cell(hsl(from $RowHeaderBaseColor h s calc(l + 30%)), $RowHeaderTextColor);
+      }
+
+      &.GrandTotal {
+        @include Cell(hsl(from $RowHeaderBaseColor h s calc(l - 10%)), $RowHeaderTextColor);
+      }
+    }
+  }
+}
+

@@ -17,8 +17,16 @@ namespace MudBlazor.Pivot
         /// Create PivotColumn list to aggregate by PropertyNames
         /// </summary>
         /// <param name="PropertyNames">Property Name of T</param>
+        /// <param name="options">rendering options</param>
+        /// <returns></returns>
+        public static List<PivotColumn<T>> Build(PivotAxisRenderOption options, params string[] PropertyNames) => PropertyNames.Select(p => new PivotColumn<T>(p, options: options)).ToList();
+        /// <summary>
+        /// Create PivotColumn list to aggregate by PropertyNames
+        /// </summary>
+        /// <param name="PropertyNames">Property Name of T</param>
         /// <returns></returns>
         public static List<PivotColumn<T>> Build(params string[] PropertyNames) => PropertyNames.Select(p => new PivotColumn<T>(p)).ToList();
+        
         /// <summary>
         /// Property Name of T
         /// </summary>
@@ -34,7 +42,9 @@ namespace MudBlazor.Pivot
         /// <param name="PropertyName"></param>
         /// <param name="titleGetter">delegate to Get title Action</param>
         /// <param name="valueGetter">delegate to Get value Action</param>
-        public PivotColumn(string PropertyName, Func<T, string> titleGetter = null, Func<T, dynamic> valueGetter = null) {
+        /// <param name="options">rendering options</param>
+        public PivotColumn(string PropertyName, Func<T, string> titleGetter = null, Func<T, dynamic> valueGetter = null, PivotAxisRenderOption options = null) {
+            Options = options is null ? new PivotAxisRenderOption() { TotalTitle = "Total", TotalCssClass = "Total" } : options;
             this.PropertyName = PropertyName;
             ValueGetter = valueGetter;
             TitleGetter = titleGetter;
@@ -74,10 +84,7 @@ namespace MudBlazor.Pivot
         /// </summary>
         internal PivotColumn<T> LowerColumn { get; set; }
 
-        public bool RenderTotal { get; set; } = false;
-        public string TotalCssClass { get; set; } = "TotalCss";
-        public string TotalTitle { get; set; } = "Total";
-        public OutputPosition TotalPosition { get; set; } = OutputPosition.Below;
+        public PivotAxisRenderOption Options { get; set; }
     }
 
     /// <summary>

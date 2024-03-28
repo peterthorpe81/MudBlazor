@@ -24,17 +24,18 @@
     {
         PivotTableRenderOption.Header[HeaderType.Row].RenderTotal = true;
         PivotTableRenderOption.Header[HeaderType.Column].RenderTotal = true;
+        var options = new PivotAxisRenderOption() { TotalTitle = "Title", RenderTotal = true, TotalCssClass = "Title" };
 
-        PivotTableRenderOption.HeaderCellOption[pivot.ColumnByName(nameof(Element.Molar))].RenderTotal = true;
-        PivotTableRenderOption.HeaderCellOption[pivot.ColumnByName(nameof(Element.Molar))].TotalTitle = "test title";
-        PivotTableRenderOption.HeaderCellOption[pivot.ColumnByName(nameof(Element.Molar))].TotalCssClass = "test css";
+        //PivotTableRenderOption.HeaderCellOption[pivot.ColumnByName(nameof(Element.Molar))].RenderTotal = true;
+        //PivotTableRenderOption.HeaderCellOption[pivot.ColumnByName(nameof(Element.Molar))].TotalTitle = "test title";
+        //PivotTableRenderOption.HeaderCellOption[pivot.ColumnByName(nameof(Element.Molar))].TotalCssClass = "test css";
 
 
 
         _elements = await httpClient.GetFromJsonAsync<List<Element>>("webapi/periodictable");
 
-        Columns = PivotColumn<Element>.Build(nameof(Element.Position));
-        Rows = PivotColumn<Element>.Build(nameof(Element.Group), nameof(Element.Name));
+        Columns = PivotColumn<Element>.Build(options, nameof(Element.Position));
+        Rows = PivotColumn<Element>.Build(options, nameof(Element.Group), nameof(Element.Name));
         Measures.Add(PivotMeasure<Element>.Sum(nameof(Element.Molar)));
         ready = true;
     }

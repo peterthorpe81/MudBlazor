@@ -131,4 +131,8 @@
     </Compile>
   </ItemGroup>
 
+  <ItemGroup>
+    <UpToDateCheckInput Remove="styles\components\_pivotgrid.scss" />
+  </ItemGroup>
+
 </Project>

@@ -1,23 +1,26 @@
 ﻿@namespace MudBlazor
 @inherits MudComponentBase
 @using MudBlazor.Pivot
+@using MudBlazor.Utilities
 @typeparam T
 
 
-<div class="@Options.TableCssClass-host">
+<div @attributes="UserAttributes" class="@_classname" style="@_style">
     @if (Items is not null && Columns is not null && Rows is not null && Measures is not null && Options is not null &&
         Items.Any() && Measures.Any())
     {
-        <table class="@Options.TableCssClass" data-hRows="@ColHeaderRowCount" data-hCols="@RowHeaderColCount">
+
+        <div class="@_tableClass" style="@_tableStyle">
+        <table class="mud-table-root" data-hRows="@ColHeaderRowCount" data-hCols="@RowHeaderColCount">
 
             @*Render Headers*@
             @{
                 var cornerRows = ColHeaderRowCount - (Options.RenderHeaderTitles ? 1 : 0);
                 var cornerColumns = RowHeaderColCount - (Options.RenderHeaderTitles ? 1 : 0);
-                <thead class='headerRows'>
+                    <thead class="@_headClassname">
                     @for (var i = 0; i < RowRender.MaxDepth; i++)
                     {
-                        <tr class="headerRow">
+                            <tr class="headerRow">
                             @if (i == 0)
                             {
                                 <th class="ch-0 rh-0 header cornerHeader" colspan="@cornerColumns" rowspan="@cornerRows"></th>
@@ -31,9 +34,10 @@
                                 var leafCount = cell.Leaf.Count() * HorisontalMeasureRatio;
                                 var isTotal = (cell is PivotTableTotalColumnRender<T>);
                                 var rowSpan = (isTotal ? RowRender.MaxDepth - cell.depth : 1);
-                                var cellClass = $"{cell.CssClass} rh-{i} " + (isTotal ? "total" : "");
-                                <th class="@cellClass" colspan="@leafCount" rowspan="@rowSpan">@cell.Title</th>
-                            }
+                                //var cellClass = $"{cell.CssClass} rh-{i} " + (isTotal ? "total" : "");
+                                    var cellClass = new CssBuilder(cell.CssClass).AddClass($"rh-{i}").AddClass($"total", isTotal).Build();
+                                    <th class="@cellClass" colspan="@leafCount" rowspan="@rowSpan">@cell.Title</th>
+                                }
                         </tr>
                     }
                     @if (!IsVertical)
@@ -60,57 +64,62 @@
 
             }
             @*Render Rows*@
-            @foreach (var leaf in ColRender.Leaves)
-            {
-                var path = leaf.Path;
-                var newLeaf = path.LastOrDefault(p => !p.IsFirstChild);
-                bool levelFound = (newLeaf == null);
-
-                <tr class="@Options.RowCssClass">
-                    @foreach (var cell in path)
-                    {
-                        if (!levelFound && cell != newLeaf)
-                            continue;
-                        levelFound = true;
-
-                        var rowSpan = cell.Leaf.Count() * VerticalMeasureRatio;
-                        var isTotal = (cell is PivotTableTotalColumnRender<T>);
-                        var colSpan = (isTotal ? ColRender.MaxDepth - cell.depth : 1);
-                        <th class="@cell.CssClass ch-@cell.depth" colspan="@colSpan" rowspan="@rowSpan">@cell.Title</th>
-                    }
-
-                    @if (IsVertical)
-                    {
-                        @foreach (var measure in _pivot.Measures)
+            <tbody class="mud-table-body">
+                @foreach (var leaf in ColRender.Leaves)
+                {
+                    var path = leaf.Path;
+                    var newLeaf = path.LastOrDefault(p => !p.IsFirstChild);
+                    bool levelFound = (newLeaf == null);
+                        var rowClass = new CssBuilder(RowClass).AddClass(RowClassFunc?.Invoke(leaf)).AddClass(Options.RowCssClass).Build();
+                        var rowStyle = new StyleBuilder().AddStyle(RowStyle).AddStyle(RowStyleFunc?.Invoke(leaf)).Build();
+                  
+                        <tr class="@rowClass" Style="@rowStyle" @key="leaf">
+                            @foreach (var cell in path)
                         {
-                            /*Component RenderMeasureTitleCell */
-                            <th class="@Options.MeasureTitleCssClass">measure.PropertyName</th>
+                            if (!levelFound && cell != newLeaf)
+                                continue;
+                            levelFound = true;
 
-                            @foreach (var colHeaderCell in RowRender.Leaves)
+                            var rowSpan = cell.Leaf.Count() * VerticalMeasureRatio;
+                            var isTotal = (cell is PivotTableTotalColumnRender<T>);
+                            var colSpan = (isTotal ? ColRender.MaxDepth - cell.depth : 1);
+                            <th class="@cell.CssClass ch-@cell.depth" colspan="@colSpan" rowspan="@rowSpan">@cell.Title</th>
+                        }
+
+                        @if (IsVertical)
+                        {
+                            @foreach (var measure in _pivot.Measures)
                             {
-                                //todo RenderMeasureCell component?
-                                @((MarkupString)(Options.RenderMeasureCell(_pivot, leaf.Cell, colHeaderCell.Cell, measure)));
-                            }
-                            @if (measure != _pivot.Measures.Last())
-                            {
-                                @((MarkupString)($"</tr><tr class=\"{Options.RowCssClass}\">"));
+                                /*Component RenderMeasureTitleCell */
+                                <th class="@Options.MeasureTitleCssClass">measure.PropertyName</th>
+
+                                @foreach (var colHeaderCell in RowRender.Leaves)
+                                {
+                                    //todo RenderMeasureCell component?
+                                    @((MarkupString)(Options.RenderMeasureCell(_pivot, leaf.Cell, colHeaderCell.Cell, measure)));
+                                }
+                                @if (measure != _pivot.Measures.Last())
+                                {
+                                    @((MarkupString)($"</tr><tr class=\"{Options.RowCssClass}\">"));
+                                }
                             }
                         }
-                    }
-                    else
-                    {
-                        foreach (var colHeaderCell in RowRender.Leaves)
+                        else
                         {
-                            foreach (var measure in _pivot.Measures)
+                            foreach (var colHeaderCell in RowRender.Leaves)
                             {
-                                //todo RenderMeasureCell component?
-                                @((MarkupString)(Options.RenderMeasureCell(_pivot, leaf.Cell, colHeaderCell.Cell, measure)));
+                                foreach (var measure in _pivot.Measures)
+                                {
+                                    //todo RenderMeasureCell component?
+                                    @((MarkupString)(Options.RenderMeasureCell(_pivot, leaf.Cell, colHeaderCell.Cell, measure)));
+                                }
                             }
                         }
-                    }
-                </tr>
+                    </tr>
 
-            }
+                }
+            </tbody>
         </table>
+        </div>
     }
 </div>

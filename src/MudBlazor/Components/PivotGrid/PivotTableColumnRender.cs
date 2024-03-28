@@ -32,7 +32,7 @@ namespace MudBlazor
             if (this is PivotTableTotalColumnRender<T>)
                 return;
 
-            var currentLevelOption = option.HeaderCellOption[Cell.Column];
+            var currentLevelOption = Cell.Column.Options;// option.HeaderCellOption[Cell.Column];
             if (currentLevelOption.RenderTotal && currentLevelOption.TotalPosition == OutputPosition.Above) {
                 Children.Add(new PivotTableTotalColumnRender<T>(Cell, option, currentLevelOption, this));
             }
