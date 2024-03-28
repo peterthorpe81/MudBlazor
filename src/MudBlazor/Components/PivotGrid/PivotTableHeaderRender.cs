@@ -19,13 +19,22 @@ namespace MudBlazor
             Contract.Requires(option != null);
             Headers = headers.ToList();
 
-            var topLevelHeader = headers.First();
             var headerOption = option.Header[headerType];
             if (headerOption.RenderTotal && headerOption.TotalPosition == OutputPosition.Above) {
                 rootCells.Add(new PivotTableTotalColumnRender<T>(null, option, headerOption));
             }
-            foreach (var cell in topLevelHeader.Items) {
-                rootCells.Add(new PivotTableColumnRender<T>(cell, option, headerOption));
+
+            var topLevelHeader = headers.FirstOrDefault();
+            if (topLevelHeader is not null)
+            {
+                foreach (var cell in topLevelHeader.Items)
+                {
+                    rootCells.Add(new PivotTableColumnRender<T>(cell, option, headerOption));
+                }
+            }
+            else
+            {
+                rootCells.Add(new PivotTableTotalColumnRender<T>(null, option, headerOption));
             }
             if (headerOption.RenderTotal && headerOption.TotalPosition == OutputPosition.Below) {
                 rootCells.Add(new PivotTableTotalColumnRender<T>(null, option, headerOption));

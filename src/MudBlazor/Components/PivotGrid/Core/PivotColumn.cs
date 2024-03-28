@@ -73,6 +73,11 @@ namespace MudBlazor.Pivot
         /// lower level column
         /// </summary>
         internal PivotColumn<T> LowerColumn { get; set; }
+
+        public bool RenderTotal { get; set; } = false;
+        public string TotalCssClass { get; set; } = "TotalCss";
+        public string TotalTitle { get; set; } = "Total";
+        public OutputPosition TotalPosition { get; set; } = OutputPosition.Below;
     }
 
     /// <summary>

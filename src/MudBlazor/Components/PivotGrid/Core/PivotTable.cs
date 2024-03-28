@@ -88,6 +88,9 @@ namespace MudBlazor.Pivot
         /// <param name="source"></param>
         /// <param name="columns">Row or Column Header List</param>
         private void BuildHeaderCells(IEnumerable<T> source, IList<PivotColumn<T>> columns) {
+            if (!columns.Any())
+                return;
+
             BuildHeaderCells(source, columns.First());
         }
 

@@ -6,7 +6,7 @@
 
 <div class="@Options.TableCssClass-host">
     @if (Items is not null && Columns is not null && Rows is not null && Measures is not null && Options is not null &&
-        Items.Any() && Columns.Any() && Rows.Any() && Measures.Any())
+        Items.Any() && Measures.Any())
     {
         <table class="@Options.TableCssClass" data-hRows="@ColHeaderRowCount" data-hCols="@RowHeaderColCount">
 
@@ -89,8 +89,7 @@
                             @foreach (var colHeaderCell in RowRender.Leaves)
                             {
                                 //todo RenderMeasureCell component?
-                                @((MarkupString)(Options.RenderMeasureCell(_pivot, leaf.Cell, colHeaderCell.Cell, measure)))
-                                ;
+                                @((MarkupString)(Options.RenderMeasureCell(_pivot, leaf.Cell, colHeaderCell.Cell, measure)));
                             }
                             @if (measure != _pivot.Measures.Last())
                             {
@@ -110,6 +109,7 @@
                         }
                     }
                 </tr>
+
             }
         </table>
     }

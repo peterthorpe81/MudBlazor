@@ -52,6 +52,7 @@ namespace MudBlazor
     }
     public class PivotAxisHeaderRenderOptions<T> {
         private Dictionary<PivotColumn<T>, PivotAxisRenderOption> options = new Dictionary<PivotColumn<T>, PivotAxisRenderOption>();
+
 #pragma warning disable CA1043 // インデクサーには整数または文字列引数を使用します
         public PivotAxisRenderOption this[PivotColumn<T> index] {
 #pragma warning restore CA1043 

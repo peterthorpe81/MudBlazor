@@ -6,7 +6,7 @@
 
 @if (ready)
 {
-    <MudPivotGrid T="Element" @ref="pivot" Items="@_elements" Columns=@Columns Rows="@Rows" Measures="@Measures" Options="@pivotTableRenderOption">   </MudPivotGrid>
+    <MudPivotGrid T="Element" @ref="pivot" Items="@_elements" Columns=@Columns Rows="@Rows" Measures="@Measures" Options="@PivotTableRenderOption">   </MudPivotGrid>
 }
 
 
@@ -16,15 +16,24 @@
     public List<PivotColumn<Element>> Columns { get; set; } = new List<PivotColumn<Element>>();
     public List<PivotColumn<Element>> Rows { get; set; } = new List<PivotColumn<Element>>();
     public List<PivotMeasure<Element>> Measures { get; set; } = new List<PivotMeasure<Element>>();
-    public PivotTableRenderOption<Element> pivotTableRenderOption = new MudBlazor.PivotTableRenderOption<Element>();
+    public PivotTableRenderOption<Element> PivotTableRenderOption = new MudBlazor.PivotTableRenderOption<Element>();
 
     public MudPivotGrid<Element> pivot = null;
     public bool ready = false;
     protected override async Task OnInitializedAsync()
     {
+        PivotTableRenderOption.Header[HeaderType.Row].RenderTotal = true;
+        PivotTableRenderOption.Header[HeaderType.Column].RenderTotal = true;
+
+        PivotTableRenderOption.HeaderCellOption[pivot.ColumnByName(nameof(Element.Molar))].RenderTotal = true;
+        PivotTableRenderOption.HeaderCellOption[pivot.ColumnByName(nameof(Element.Molar))].TotalTitle = "test title";
+        PivotTableRenderOption.HeaderCellOption[pivot.ColumnByName(nameof(Element.Molar))].TotalCssClass = "test css";
+
+
+
         _elements = await httpClient.GetFromJsonAsync<List<Element>>("webapi/periodictable");
 
-        Columns = PivotColumn<Element>.Build();
+        Columns = PivotColumn<Element>.Build(nameof(Element.Position));
         Rows = PivotColumn<Element>.Build(nameof(Element.Group), nameof(Element.Name));
         Measures.Add(PivotMeasure<Element>.Sum(nameof(Element.Molar)));
         ready = true;

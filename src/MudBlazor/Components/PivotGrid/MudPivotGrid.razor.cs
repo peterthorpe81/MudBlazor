@@ -47,6 +47,10 @@ namespace MudBlazor
             await base.OnParametersSetAsync();
         }
 
+        public PivotColumn<T> ColumnByName(string columnName)
+        {
+            return _pivot.ColumnByName(columnName);
+        }
 
         /// <summary>
         /// Header Row Rendering Count
