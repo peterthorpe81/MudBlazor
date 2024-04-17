@@ -41,7 +41,7 @@
   $RowHeaderTextColor: var(--mud-palette-secondary-text);
 
   $BorderColor: #ddd;
-  $measureTitleColor: hsl(from var(--mud-palette-primary) h s calc(l + 10%));
+  $measureTitleColor: hsl(from var(--mud-palette-primary) h s calc(l + 0.075));
   $measureTitleTextColor: var(--mud-palette-primary-text);
 
   @mixin Cell($CellColor, $TextColor) {
@@ -63,18 +63,18 @@
     }
 
     .colGrandTotal {
-      @include Cell(hsl(from $CellColor h s calc(l - 10%)), $TextColor);
+      @include Cell(hsl(from $CellColor h s calc(l - 0.075)), $TextColor);
     }
   }
 
 
 
-  .number {
+  .measure {
     // text-align: right;
   }
 
   .rowtitle {
-    @include Cell(hsl(from $RowHeaderBaseColor h s calc(l - 10%)), $RowHeaderTextColor);
+    @include Cell(hsl(from $RowHeaderBaseColor h s calc(l - 0.075)), $RowHeaderTextColor);
   }
 
   th, td {
@@ -93,15 +93,15 @@
   }
 
   tr.headerRow:nth-child(2) {
-    @include headerRowMixin(hsl(from $ColHeaderBaseColor h s calc(l + 10%)), $ColHeaderTextColor);
+    @include headerRowMixin(hsl(from $ColHeaderBaseColor h s calc(l + 0.075)), $ColHeaderTextColor);
   }
 
   tr.headerRow:nth-child(3) {
-    @include headerRowMixin(hsl(from $ColHeaderBaseColor h s calc(l + 20%)), $ColHeaderTextColor);
+    @include headerRowMixin(hsl(from $ColHeaderBaseColor h s calc(l + 0.15)), $ColHeaderTextColor);
   }
 
   tr.headerRow:nth-child(4) {
-    @include headerRowMixin(hsl(from $ColHeaderBaseColor h s calc(l + 30%)), $ColHeaderTextColor);
+    @include headerRowMixin(hsl(from $ColHeaderBaseColor h s calc(l + 0.075)), $ColHeaderTextColor);
   }
 
   .measureTitle {
@@ -124,19 +124,23 @@
       //border-bottom: #ccc 1px solid;
 
       &.ch-0 {
-        @include Cell(hsl(from $RowHeaderBaseColor h s calc(l + 10%)), $RowHeaderTextColor);
+        @include Cell($RowHeaderBaseColor, $RowHeaderTextColor);
       }
 
       &.ch-1 {
-        @include Cell(hsl(from $RowHeaderBaseColor h s calc(l + 20%)), $RowHeaderTextColor);
+        @include Cell(hsl(from $RowHeaderBaseColor h s calc(l + 0.075)), $RowHeaderTextColor);
       }
 
       &.ch-2 {
-        @include Cell(hsl(from $RowHeaderBaseColor h s calc(l + 30%)), $RowHeaderTextColor);
+        @include Cell(hsl(from $RowHeaderBaseColor h s calc(l + 0.15)), $RowHeaderTextColor);
+      }
+
+      &.ch-3 {
+        @include Cell(hsl(from $RowHeaderBaseColor h s calc(l + 0.225)), $RowHeaderTextColor);
       }
 
       &.GrandTotal {
-        @include Cell(hsl(from $RowHeaderBaseColor h s calc(l - 10%)), $RowHeaderTextColor);
+        @include Cell(hsl(from $RowHeaderBaseColor h s calc(l - 0.1)), $RowHeaderTextColor);
       }
     }
   }

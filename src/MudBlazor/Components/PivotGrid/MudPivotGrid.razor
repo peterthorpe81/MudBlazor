@@ -23,11 +23,11 @@
                             <tr class="headerRow">
                             @if (i == 0)
                             {
-                                <th class="ch-0 rh-0 header cornerHeader" colspan="@cornerColumns" rowspan="@cornerRows"></th>
+                                <th class="ch-0 rh-0 header cornerHeader tmpe" colspan="@cornerColumns" rowspan="@cornerRows"></th>
                             }
                             @if (Options.RenderHeaderTitles)
                             {
-                                <th class="coltitle rh-{i} ch-@cornerColumns">@RowRender.HeaderTitle(i)</th>
+                                <th class="coltitle rh-@i ch-@cornerColumns tmpd">@RowRender.HeaderTitle(i)</th>
                             }
                             @foreach (var cell in RowRender[i])
                             {
@@ -36,18 +36,18 @@
                                 var rowSpan = (isTotal ? RowRender.MaxDepth - cell.depth : 1);
                                 //var cellClass = $"{cell.CssClass} rh-{i} " + (isTotal ? "total" : "");
                                     var cellClass = new CssBuilder(cell.CssClass).AddClass($"rh-{i}").AddClass($"total", isTotal).Build();
-                                    <th class="@cellClass" colspan="@leafCount" rowspan="@rowSpan">@cell.Title</th>
-                                }
+                                    <th class="@cellClass tmpx" colspan="@leafCount" rowspan="@rowSpan">@cell.Title</th>
+                            }
                         </tr>
                     }
                     @if (!IsVertical)
                     {
-                        <tr class="headerRow">
+                        <tr class="headerRow tmpf">
                             @if (Options.RenderHeaderTitles)
                             {
                                 @for (int i = 0; i < ColRender.MaxDepth; i++)
                                 {
-                                    <th class="rowtitle rh-{cornerRows} ch-{i}">@ColRender.HeaderTitle(i)</th>
+                                    <th class="rowtitle rh-@cornerRows ch-@i tmpc">@ColRender.HeaderTitle(i)</th>
                                 }
                             }
                             @foreach (var cell in RowRender.Leaves)
@@ -55,7 +55,7 @@
                                 @foreach (var measure in _pivot.Measures)
                                 {
                                     /*Component RenderMeasureTitleCell */
-                                    <th class="@Options.MeasureTitleCssClass">@measure.PropertyName</th>
+                                    <th class="@Options.MeasureTitleCssClass tmpb">@measure.PropertyName</th>
                                 }
                             }
                         </tr>
@@ -69,11 +69,14 @@
                 {
                     var path = leaf.Path;
                     var newLeaf = path.LastOrDefault(p => !p.IsFirstChild);
-                    bool levelFound = (newLeaf == null);
+                        //var lastLeaf = path.FirstOrDefault(p => !p.IsLastChild);
+                        bool levelFound = (newLeaf == null);
                         var rowClass = new CssBuilder(RowClass).AddClass(RowClassFunc?.Invoke(leaf)).AddClass(Options.RowCssClass).Build();
                         var rowStyle = new StyleBuilder().AddStyle(RowStyle).AddStyle(RowStyleFunc?.Invoke(leaf)).Build();
-                  
-                        <tr class="@rowClass" Style="@rowStyle" @key="leaf">
+                        //var isRowTotal = lastLeaf is PivotTableTotalColumnRender<T>;
+
+                        //var isT = leaf.Children == null ? true : false;
+                        <tr class="@rowClass tmpa" Style="@rowStyle" @key="leaf">
                             @foreach (var cell in path)
                         {
                             if (!levelFound && cell != newLeaf)
@@ -83,7 +86,10 @@
                             var rowSpan = cell.Leaf.Count() * VerticalMeasureRatio;
                             var isTotal = (cell is PivotTableTotalColumnRender<T>);
                             var colSpan = (isTotal ? ColRender.MaxDepth - cell.depth : 1);
-                            <th class="@cell.CssClass ch-@cell.depth" colspan="@colSpan" rowspan="@rowSpan">@cell.Title</th>
+                            @if (colSpan > 0)
+                            {
+                                <th class="@cell.CssClass tmpy ch-@cell.depth" colspan="@colSpan" rowspan="@rowSpan">@cell.Title</th>
+                            }
                         }
 
                         @if (IsVertical)
@@ -100,7 +106,7 @@
                                 }
                                 @if (measure != _pivot.Measures.Last())
                                 {
-                                    @((MarkupString)($"</tr><tr class=\"{Options.RowCssClass}\">"));
+                                    @((MarkupString)($"</tr><tr class=\"{Options.RowCssClass} tmpg\">"));
                                 }
                             }
                         }

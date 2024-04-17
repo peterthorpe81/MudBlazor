@@ -25,7 +25,10 @@ namespace MudBlazor
         private Dictionary<PivotMeasure<T>, Func<PivotTable<T>, PivotHeaderCell<T>, PivotHeaderCell<T>, PivotMeasure<T>, string>> measureFormatterDictionary
             = new Dictionary<PivotMeasure<T>, Func<PivotTable<T>, PivotHeaderCell<T>, PivotHeaderCell<T>, PivotMeasure<T>, string>>();
         private static Func<PivotTable<T>, PivotHeaderCell<T>, PivotHeaderCell<T>, PivotMeasure<T>, string> defaultCellRender
-            = (pivot, row, col, measure) => $"<td class=\"number\">{string.Format("{0:#,0}", (pivot[row, col, measure]))}</td>";
+            = (pivot, row, col, measure) =>
+            {
+                return $"<td class=\"measure\">{string.Format("{0:#,0}", (pivot[row, col, measure]))}</td>";
+            };
         public PivotTableRenderOption<T> SetMeasureFormatter(PivotMeasure<T> measure, Func<PivotTable<T>, PivotHeaderCell<T>, PivotHeaderCell<T>, PivotMeasure<T>, string> formatFunction) {
             if (measureFormatterDictionary.ContainsKey(measure)) {
                 measureFormatterDictionary[measure] = formatFunction;
