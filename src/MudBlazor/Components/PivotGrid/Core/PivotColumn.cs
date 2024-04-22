@@ -44,7 +44,7 @@ namespace MudBlazor.Pivot
         /// <param name="valueGetter">delegate to Get value Action</param>
         /// <param name="options">rendering options</param>
         public PivotColumn(string PropertyName, Func<T, string> titleGetter = null, Func<T, dynamic> valueGetter = null, PivotAxisRenderOption options = null) {
-            Options = options is null ? new PivotAxisRenderOption() { TotalTitle = "Total", TotalCssClass = "Total" } : options;
+            Options = options is null ? new PivotAxisRenderOption() : options;
             this.PropertyName = PropertyName;
             ValueGetter = valueGetter;
             TitleGetter = titleGetter;

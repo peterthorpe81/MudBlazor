@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
+using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 using MudBlazor.Pivot;
@@ -14,14 +15,15 @@ namespace MudBlazor
         public int MaxDepth => Headers.Count;
         public string HeaderTitle(int depth) => Headers[depth].PropertyName;
 
-        public PivotTableHeaderRender(HeaderType headerType, IEnumerable<PivotColumn<T>> headers, PivotTableRenderOption<T> option) {
+        public PivotTableHeaderRender(HeaderType headerType, IEnumerable<PivotColumn<T>> headers, MudPivotGrid<T> grid) {
             Contract.Requires(headers != null);
-            Contract.Requires(option != null);
-            Headers = headers.ToList();
+            Contract.Requires(grid != null);
 
-            var headerOption = option.Header[headerType];
-            if (headerOption.RenderTotal && headerOption.TotalPosition == OutputPosition.Above) {
-                rootCells.Add(new PivotTableTotalColumnRender<T>(null, option, headerOption));
+            //OutputPosition totalPosition = headerType == HeaderType.Column ? grid.ColumnTotalPosition : grid.RowTotalPosition;
+            Headers = headers.ToList();
+            var headerOption = grid.Header[headerType];
+            if (headerOption.TotalPosition == OutputPosition.Above) {
+                rootCells.Add(new PivotTableTotalColumnRender<T>(null, grid, headerOption));
             }
 
             var topLevelHeader = headers.FirstOrDefault();
@@ -29,15 +31,15 @@ namespace MudBlazor
             {
                 foreach (var cell in topLevelHeader.Items)
                 {
-                    rootCells.Add(new PivotTableColumnRender<T>(cell, option, headerOption));
+                    rootCells.Add(new PivotTableColumnRender<T>(cell, grid, headerOption));
                 }
             }
             else
             {
-                rootCells.Add(new PivotTableTotalColumnRender<T>(null, option, headerOption));
+                rootCells.Add(new PivotTableTotalColumnRender<T>(null, grid, headerOption));
             }
-            if (headerOption.RenderTotal && headerOption.TotalPosition == OutputPosition.Below) {
-                rootCells.Add(new PivotTableTotalColumnRender<T>(null, option, headerOption));
+            if (headerOption.TotalPosition == OutputPosition.Below) {
+                rootCells.Add(new PivotTableTotalColumnRender<T>(null, grid, headerOption));
             }
         }
         public IEnumerable<PivotTableColumnRender<T>> this[int depth] {

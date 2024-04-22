@@ -11,6 +11,8 @@ namespace MudBlazor.Pivot
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public class PivotMeasure<T> {
+
+        public string Format { get; set; } = "";
         /// <summary>
         /// Create a Measure list that calculates the total
         /// </summary>
@@ -22,48 +24,60 @@ namespace MudBlazor.Pivot
         /// </summary>
         /// <param name="propertyName"></param>
         /// <param name="valueGetter"></param>
+        /// <param name="title"></param>
         /// <returns></returns>
-        public static PivotMeasure<T> Sum(string propertyName, Func<T, decimal> valueGetter = null) => new PivotMeasure<T>(propertyName, valueGetter) { aggregate = aggregate_sum };
+        public static PivotMeasure<T> Sum(string propertyName, Func<T, decimal> valueGetter = null, string title = null) => new PivotMeasure<T>(propertyName, valueGetter, title) { aggregate = aggregate_sum };
         /// <summary>
         /// Create a measure to calculate the count
         /// </summary>
         /// <param name="propertyName"></param>
         /// <param name="valueGetter"></param>
+        /// <param name="title"></param>
         /// <returns></returns>
-        public static PivotMeasure<T> Count(string propertyName, Func<T, decimal> valueGetter = null) => new PivotMeasure<T>(propertyName, valueGetter) { aggregate = aggregate_count };
+        public static PivotMeasure<T> Count(string propertyName, Func<T, decimal> valueGetter = null, string title = null) => new PivotMeasure<T>(propertyName, valueGetter, title) { aggregate = aggregate_count };
         /// <summary>
         /// Create a measure to calculate the average
         /// </summary>
         /// <param name="propertyName"></param>
         /// <param name="valueGetter"></param>
+        /// <param name="title"></param>
         /// <returns></returns>
-        public static PivotMeasure<T> Average(string propertyName, Func<T, decimal> valueGetter = null) => new PivotMeasure<T>(propertyName, valueGetter) { aggregate = aggregate_average };
+        public static PivotMeasure<T> Average(string propertyName, Func<T, decimal> valueGetter = null, string title = null) => new PivotMeasure<T>(propertyName, valueGetter, title) { aggregate = aggregate_average };
         /// <summary>
         /// Create a measure to calculate the maximum
         /// </summary>
         /// <param name="propertyName"></param>
         /// <param name="valueGetter"></param>
+        /// <param name="title"></param>
         /// <returns></returns>
-        public static PivotMeasure<T> Max(string propertyName, Func<T, decimal> valueGetter = null) => new PivotMeasure<T>(propertyName, valueGetter) { aggregate = aggregate_max };
+        public static PivotMeasure<T> Max(string propertyName, Func<T, decimal> valueGetter = null, string title = null) => new PivotMeasure<T>(propertyName, valueGetter, title) { aggregate = aggregate_max };
         /// <summary>
         /// Create a measure to calculate the minimum
         /// </summary>
         /// <param name="propertyName"></param>
         /// <param name="valueGetter"></param>
+        /// <param name="title"></param>
         /// <returns></returns>
-        public static PivotMeasure<T> Min(string propertyName, Func<T, decimal> valueGetter = null) => new PivotMeasure<T>(propertyName, valueGetter) { aggregate = aggregate_min };
+        public static PivotMeasure<T> Min(string propertyName, Func<T, decimal> valueGetter = null, string title = null) => new PivotMeasure<T>(propertyName, valueGetter, title) { aggregate = aggregate_min };
         /// <summary>
         /// Property Name of T
         /// </summary>
         public string PropertyName { get; private set; }
         /// <summary>
+        /// Title
+        /// </summary>
+        public string Title { get; private set; }
+
+        /// <summary>
         /// delegate get value of T
         /// </summary>
         internal Func<T, decimal> ValueGetter { get; set; }
 
-        public PivotMeasure(string propertyName, Func<T, decimal> valueGetter = null) {
+        public PivotMeasure(string propertyName, Func<T, decimal> valueGetter = null, string title = null)
+        {
             this.PropertyName = propertyName;
             ValueGetter = valueGetter;
+            Title = title is null ? propertyName : title;
         }
         /// <summary>
         /// delegate aggregate 

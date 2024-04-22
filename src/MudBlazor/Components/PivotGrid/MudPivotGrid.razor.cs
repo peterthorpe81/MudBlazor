@@ -12,10 +12,21 @@ using MudBlazor.Utilities;
 
 namespace MudBlazor
 {
+    public enum HeaderType { Row, Column }
+    public enum MeasureArrangementType { Horisontal, Vertical }
+    public enum OutputPosition { Above, Below, None }
+
+    public class PivotAxisRenderOption
+    {    
+        public string TotalCssClass { get; set; } = "mud-pivot-total";
+        public string TotalTitle { get; set; } = "Total";
+        public OutputPosition TotalPosition { get; set; } = OutputPosition.Below;
+    }
+
     [RequiresUnreferencedCode("Calls System.Linq.Expressions.Expression.Property(Expression, String)")]
     public partial class MudPivotGrid<T> : MudComponentBase {
-        private PivotTableRenderOption<T> Option { get; set; }
-        private bool IsVertical => Options.MeasureArrangement == MeasureArrangementType.Vertical;
+        //private PivotTableRenderOption<T> Option { get; set; }
+        private bool IsVertical => MeasureArrangement == MeasureArrangementType.Vertical;
 
         [Parameter]
         public IEnumerable<T> Items { get; set; }
@@ -29,22 +40,12 @@ namespace MudBlazor
         [Parameter]
         public List<PivotMeasure<T>> Measures { get; set; }
 
-        [Parameter]
-        public PivotTableRenderOption<T> Options { get; set; }
+        //[Parameter]
+        //public PivotTableRenderOption<T> Options { get; set; }
 
         private PivotTable<T> _pivot;
 
-        protected string _classname =>
-            new CssBuilder("mud-table")
-               .AddClass("mud-pivot-grid")               
-               .AddClass("mud-table-dense", Dense)
-               .AddClass("mud-table-hover", Hover)
-               .AddClass("mud-table-bordered")
-               .AddClass("mud-table-outlined", Outlined)
-               .AddClass("mud-table-square", Square)
-               .AddClass($"mud-elevation-{Elevation}", !Outlined)
-              .AddClass(Class)
-            .Build();
+       
 
         /// <summary>
         /// Set true for rows with a narrow height
@@ -93,20 +94,44 @@ namespace MudBlazor
         [Parameter] public string RowClass { get; set; }
 
         /// <summary>
-        /// CSS styles for the table rows. Note, many CSS settings are overridden by MudTd though
+        /// Returns the class that will get joined with RowClass. Takes the current item and row index.
         /// </summary>
-        [Parameter] public string RowStyle { get; set; }
+        [Parameter] public Func<PivotTableColumnRender<T>, string> MeasureClassFunc { get; set; }
 
         /// <summary>
         /// Returns the class that will get joined with RowClass. Takes the current item and row index.
         /// </summary>
-        [Parameter] public Func<PivotTableColumnRender<T>, string> RowClassFunc { get; set; }
+        [Parameter] public Func<PivotTableColumnRender<T>, string> MeasureStyleFunc { get; set; }
 
         /// <summary>
-        /// Returns the class that will get joined with RowClass. Takes the current item and row index.
+        /// Measures are arranged Horizontally or vertically
         /// </summary>
-        [Parameter] public Func<PivotTableColumnRender<T>, string> RowStyleFunc { get; set; }
+        [Parameter] public MeasureArrangementType MeasureArrangement { get; set; } = MeasureArrangementType.Horisontal;
 
+
+
+        //public string TotalCssClass { get; set; } = "GrandTotal";
+        //[Parameter] public string TotalTitle { get; set; } = Localizer["MudPivotGrid.GrandTotal"];
+        //[Parameter] public bool RenderRowTotals { get; set; } = true;
+        //[Parameter] public bool RenderColumnTotals { get; set; } = true;
+
+        internal string TotalTitle { get; set; }
+
+        [Parameter] public bool RenderHeaderTitles { get; set; } = true;
+        [Parameter] public OutputPosition RowTotalPosition { get; set; } = OutputPosition.Below;
+        [Parameter] public OutputPosition ColumnTotalPosition { get; set; } = OutputPosition.Below;
+
+        protected string _classname =>
+           new CssBuilder("mud-table")
+              .AddClass("mud-pivot-grid")
+              .AddClass("mud-table-dense", Dense)
+              .AddClass("mud-table-hover", Hover)
+              .AddClass("mud-table-bordered")
+              .AddClass("mud-table-outlined", Outlined)
+              .AddClass("mud-table-square", Square)
+              .AddClass($"mud-elevation-{Elevation}", !Outlined)
+             .AddClass(Class)
+           .Build();
 
         protected string _style =>
             new StyleBuilder()
@@ -120,22 +145,50 @@ namespace MudBlazor
                 .AddStyle("width", "max-content", when: HorizontalScrollbar)
                 .AddStyle("display", "block", when: HorizontalScrollbar)
             .Build();
+
         protected string _tableClass =>
             new CssBuilder("mud-table-container")
+            .Build();
+
+        protected string _totalClass =>
+            new CssBuilder("mud-pivot-total").AddClass("mud-table-cell")
             .Build();
 
         protected string _headClassname => new CssBuilder("mud-table-head")
             .AddClass(HeaderClass).Build();
 
+        protected string _headRowClassname => new CssBuilder("mud-pivot-head-row").Build();
+
+        protected string _rowClass => new CssBuilder("mud-table-row").AddClass(RowClass).Build();
+
+        protected string _measureTitleClass => new CssBuilder("mud-pivot-measure-title").AddClass("mud-table-cell").Build();
+        protected string _rowTitleClass => new CssBuilder("mud-pivot-row-title").AddClass("mud-table-cell").Build();
+        protected string _columnTitleClass => new CssBuilder("mud-pivot-column-title").AddClass("mud-table-cell").Build();
+        protected string _cornerClass => new CssBuilder("mud-pivot-corner").AddClass("mud-table-cell").Build();
+
+        internal string CellClass => new CssBuilder("mud-table-cell").Build();
+        internal string TotalClass => new CssBuilder("mud-pivot-total").Build();
+
+
+         internal Dictionary<HeaderType, PivotAxisRenderOption> Header;
+
         protected override async Task OnParametersSetAsync()
         {
+
+            TotalTitle = Localizer["MudPivotGrid.GrandTotal"];
+
+            Header = new Dictionary<HeaderType, PivotAxisRenderOption>() {
+                { HeaderType.Row , new PivotAxisRenderOption() { TotalPosition = RowTotalPosition, TotalTitle =  TotalTitle, TotalCssClass = TotalClass } },
+                { HeaderType.Column , new PivotAxisRenderOption() { TotalPosition = ColumnTotalPosition, TotalTitle = TotalTitle, TotalCssClass = TotalClass  } }        
+            };
+
 
             if (Items != null)
             {
                 _pivot = new PivotTable<T>(Items, Rows, Columns, Measures);
 
-                RowRender = new PivotTableHeaderRender<T>(HeaderType.Row, _pivot.ColHeaders, Options);
-                ColRender = new PivotTableHeaderRender<T>(HeaderType.Column, _pivot.RowHeaders, Options);
+                RowRender = new PivotTableHeaderRender<T>(HeaderType.Row, _pivot.ColHeaders, this);
+                ColRender = new PivotTableHeaderRender<T>(HeaderType.Column, _pivot.RowHeaders, this);
 
             }
             await base.OnParametersSetAsync();

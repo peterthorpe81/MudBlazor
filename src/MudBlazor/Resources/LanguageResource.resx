@@ -252,4 +252,10 @@
   <data name="MudDataGrid.Sort" xml:space="preserve">
     <value>Sort</value>
   </data>
+  <data name="MudPivotGrid.GrandTotal" xml:space="preserve">
+    <value>Grand Total</value>
+  </data>
+  <data name="MudPivotGrid.Total" xml:space="preserve">
+    <value>Total</value>
+  </data>
 </root>

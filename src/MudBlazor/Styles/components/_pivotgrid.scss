@@ -1,39 +1,6 @@
 
-//.mud-pivot-grid {
-//
-//  @mixin cell() {
-//    border: 1px solid var(--mud-palette-table-lines);
-//  }
-//
-//  .mud-field {
-//    @include cell;
-//  }
-//
-//  .mud-field-title {
-//    @include cell;
-//  }
-//
-//  .mud-field-subtotal {
-//    @include cell;
-//    border: 1px solid var(--mud-palette-table-lines);
-//  }
-//
-//  .mud-field-subtotal {
-//    @include cell;
-//    border: 1px solid var(--mud-palette-table-lines);
-//  }
-//}
-
-
-
-
-
-
-
 .mud-pivot-grid {
-  //display: table;
-  //  border-collapse: separate;
-  //  border-spacing: 0px;
+
   $ColHeaderBaseColor: var(--mud-palette-primary);
   $ColHeaderTextColor: var(--mud-palette-primary-text);
 
@@ -54,95 +21,102 @@
       color: var(--mud-palette-primary-text);
     }
 
-    .coltitle {
+    .mud-pivot-column-title {
       background-color: hsl(from $CellColor h s calc(l - 5%));
     }
 
-    .cell {
+    .mud-table-cell {
       @include Cell($CellColor, $TextColor);
     }
 
-    .colGrandTotal {
+    .mud-pivot-total {
       @include Cell(hsl(from $CellColor h s calc(l - 0.075)), $TextColor);
     }
   }
-
-
 
   .measure {
     // text-align: right;
   }
 
-  .rowtitle {
+  .mud-pivot-row-title {
     @include Cell(hsl(from $RowHeaderBaseColor h s calc(l - 0.075)), $RowHeaderTextColor);
   }
 
-  th, td {
-    //padding: 5px;
-    //white-space: nowrap;
-  }
-
-  .cornerHeader {
+  .mud-pivot-corner {
     //background-color: white;
   }
 
 
 
-  tr.headerRow:nth-child(1) {
+  tr.mud-pivot-head-row:nth-child(1) {
     @include headerRowMixin($ColHeaderBaseColor, $ColHeaderTextColor)
   }
 
-  tr.headerRow:nth-child(2) {
+  tr.mud-pivot-head-row:nth-child(2) {
     @include headerRowMixin(hsl(from $ColHeaderBaseColor h s calc(l + 0.075)), $ColHeaderTextColor);
   }
 
-  tr.headerRow:nth-child(3) {
+  tr.mud-pivot-head-row:nth-child(3) {
     @include headerRowMixin(hsl(from $ColHeaderBaseColor h s calc(l + 0.15)), $ColHeaderTextColor);
   }
 
-  tr.headerRow:nth-child(4) {
+  tr.mud-pivot-head-row:nth-child(4) {
     @include headerRowMixin(hsl(from $ColHeaderBaseColor h s calc(l + 0.075)), $ColHeaderTextColor);
   }
 
-  .measureTitle {
+  .mud-pivot-measure-title {
     @include Cell($measureTitleColor, $measureTitleTextColor);
-    white-space: nowrap;
   }
 
-  tr.dataRow {
-    td, th {
-      //border-bottom: $BorderColor 1px solid;
+  .mud-table-row {
+    .ch--1 {
+      @include Cell(hsl(from $RowHeaderBaseColor h s calc(l - 0.075)), $RowHeaderTextColor);
     }
 
-    &:hover {
-      //background-color: #eee;
+    .ch-0 {
+      @include Cell($RowHeaderBaseColor, $RowHeaderTextColor);
     }
 
-    th.cell {
-      //vertical-align: top;
-      //border-right: #ccc 1px solid;
-      //border-bottom: #ccc 1px solid;
+    .ch-1 {
+      @include Cell(hsl(from $RowHeaderBaseColor h s calc(l + 0.075)), $RowHeaderTextColor);
+    }
 
-      &.ch-0 {
-        @include Cell($RowHeaderBaseColor, $RowHeaderTextColor);
-      }
+    .ch-2 {
+      @include Cell(hsl(from $RowHeaderBaseColor h s calc(l + 0.15)), $RowHeaderTextColor);
+    }
 
-      &.ch-1 {
-        @include Cell(hsl(from $RowHeaderBaseColor h s calc(l + 0.075)), $RowHeaderTextColor);
-      }
+    .ch-3 {
+      @include Cell(hsl(from $RowHeaderBaseColor h s calc(l + 0.225)), $RowHeaderTextColor);
+    }
 
-      &.ch-2 {
-        @include Cell(hsl(from $RowHeaderBaseColor h s calc(l + 0.15)), $RowHeaderTextColor);
-      }
 
-      &.ch-3 {
-        @include Cell(hsl(from $RowHeaderBaseColor h s calc(l + 0.225)), $RowHeaderTextColor);
-      }
+    .rh-1 {
+      @include Cell(hsl(from $ColHeaderBaseColor h s calc(l)), $ColHeaderTextColor);
+    }
 
-      &.GrandTotal {
-        @include Cell(hsl(from $RowHeaderBaseColor h s calc(l - 0.1)), $RowHeaderTextColor);
-      }
+    .rh-2 {
+      @include Cell(hsl(from $ColHeaderBaseColor h s calc(l + 0.075)), $ColHeaderTextColor);
+    }
+
+    .rh-3 {
+      @include Cell(hsl(from $ColHeaderBaseColor h s calc(l + 0.15)), $ColHeaderTextColor);
+    }
+
+    .rh-4 {
+      @include Cell(hsl(from $ColHeaderBaseColor h s calc(l + 0.225)), $ColHeaderTextColor);
+    }
+
+    .rh-5 {
+      @include Cell(hsl(from $ColHeaderBaseColor h s calc(l + 0.3)), $ColHeaderTextColor);
+    }
+
+
+    .ch-3 {
+      @include Cell(hsl(from $RowHeaderBaseColor h s calc(l + 0.225)), $RowHeaderTextColor);
+    }
+
+    .mud-pivot-total {
+      //@include Cell(hsl(from $RowHeaderBaseColor h s calc(l - 0.1)), $RowHeaderTextColor);
     }
   }
 }
-

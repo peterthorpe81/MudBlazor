@@ -14,11 +14,10 @@ namespace MudBlazor
         internal int depth { get; set; }
 
         public string Title { get; protected set; }
-        public string CssClass { get; protected set; } = "cell";
 
         internal List<PivotTableColumnRender<T>> Children { get; private set; } = new List<PivotTableColumnRender<T>>();
-        public PivotTableColumnRender(PivotHeaderCell<T> current, PivotTableRenderOption<T> option, PivotAxisRenderOption headerOption, PivotTableColumnRender<T> parent = null) {
-            Contract.Requires(option != null);
+        public PivotTableColumnRender(PivotHeaderCell<T> current, MudPivotGrid<T> grid, PivotAxisRenderOption headerOption, PivotTableColumnRender<T> parent = null) {
+            Contract.Requires(grid != null);
             Contract.Requires(headerOption != null);
 
             Cell = current;
@@ -33,14 +32,14 @@ namespace MudBlazor
                 return;
 
             var currentLevelOption = Cell.Column.Options;// option.HeaderCellOption[Cell.Column];
-            if (currentLevelOption.RenderTotal && currentLevelOption.TotalPosition == OutputPosition.Above) {
-                Children.Add(new PivotTableTotalColumnRender<T>(Cell, option, currentLevelOption, this));
+            if (currentLevelOption.TotalPosition == OutputPosition.Above) {
+                Children.Add(new PivotTableTotalColumnRender<T>(Cell, grid, currentLevelOption, this));
             }
             foreach (var child in Cell.Children) {
-                Children.Add(new PivotTableColumnRender<T>(child, option, currentLevelOption, this));
+                Children.Add(new PivotTableColumnRender<T>(child, grid, currentLevelOption, this));
             }
-            if (currentLevelOption.RenderTotal && currentLevelOption.TotalPosition == OutputPosition.Below) {
-                Children.Add(new PivotTableTotalColumnRender<T>(Cell, option, currentLevelOption, this));
+            if (currentLevelOption.TotalPosition == OutputPosition.Below) {
+                Children.Add(new PivotTableTotalColumnRender<T>(Cell, grid, currentLevelOption, this));
             }
         }
         public IEnumerable<PivotTableColumnRender<T>> ListByDepth(int depth) {

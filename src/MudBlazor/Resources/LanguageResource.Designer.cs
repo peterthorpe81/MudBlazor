@@ -410,5 +410,23 @@ namespace MudBlazor.Resources {
                 return ResourceManager.GetString("MudDataGrid.Value", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Grand Total.
+        /// </summary>
+        public static string MudPivotGrid_GrandTotal {
+            get {
+                return ResourceManager.GetString("MudPivotGrid.GrandTotal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Total.
+        /// </summary>
+        public static string MudPivotGrid_Total {
+            get {
+                return ResourceManager.GetString("MudPivotGrid.Total", resourceCulture);
+            }
+        }
     }
 }

@@ -6,7 +6,15 @@
 
 @if (ready)
 {
-    <MudPivotGrid T="Element" @ref="pivot" Items="@_elements" Columns=@Columns Rows="@Rows" Measures="@Measures" Options="@PivotTableRenderOption">   </MudPivotGrid>
+    <MudPivotGrid T="Element" @ref="pivot" Items="@_elements" Columns=@Columns Rows="@Rows" Measures="@Measures"                
+        RowRenderTotal="true"
+        RowTotalCssClass="GrandTotal"
+        RowTotalTitle="GrandTotal"
+        RowTotalPosition=OutputPosition.Below
+                  ColumnRenderTotal="true"
+        ColumnTotalCssClass="GrandTotal"
+        ColumnTotalTitle="GrandTotal"
+        ColumnTotalPosition=OutputPosition.Below>   </MudPivotGrid>
 }
 
 
@@ -16,17 +24,17 @@
     public List<PivotColumn<Element>> Columns { get; set; } = new List<PivotColumn<Element>>();
     public List<PivotColumn<Element>> Rows { get; set; } = new List<PivotColumn<Element>>();
     public List<PivotMeasure<Element>> Measures { get; set; } = new List<PivotMeasure<Element>>();
-    public PivotTableRenderOption<Element> PivotTableRenderOption = new MudBlazor.PivotTableRenderOption<Element>();
+    //public PivotTableRenderOption<Element> PivotTableRenderOption = new MudBlazor.PivotTableRenderOption<Element>();
 
     public MudPivotGrid<Element> pivot = null;
     public bool ready = false;
     protected override async Task OnInitializedAsync()
     {
-        PivotTableRenderOption.Header[HeaderType.Row].RenderTotal = true;
+        /*PivotTableRenderOption.Header[HeaderType.Row].RenderTotal = true;
         PivotTableRenderOption.Header[HeaderType.Column].RenderTotal = true;
         var columnOptions = new PivotAxisRenderOption() { TotalTitle = "Title Col", RenderTotal = true, TotalCssClass = "TotalCol" };
         var rowOptions = new PivotAxisRenderOption() { TotalTitle = "Total Row", RenderTotal = true, TotalCssClass = "TotalRow" };
-
+        */
         //PivotTableRenderOption.HeaderCellOption[pivot.ColumnByName(nameof(Element.Molar))].RenderTotal = true;
         //PivotTableRenderOption.HeaderCellOption[pivot.ColumnByName(nameof(Element.Molar))].TotalTitle = "test title";
         //PivotTableRenderOption.HeaderCellOption[pivot.ColumnByName(nameof(Element.Molar))].TotalCssClass = "test css";
@@ -35,9 +43,12 @@
 
         _elements = await httpClient.GetFromJsonAsync<List<Element>>("webapi/periodictable");
 
-        Columns = PivotColumn<Element>.Build(columnOptions, nameof(Element.Position));
-        Rows = PivotColumn<Element>.Build(rowOptions, nameof(Element.Group), nameof(Element.Name));
-        Measures.Add(PivotMeasure<Element>.Sum(nameof(Element.Molar)));
+        Columns = PivotColumn<Element>.Build(nameof(Element.Position), nameof(Element.Group));
+        //Columns[0].Options
+          Rows = PivotColumn<Element>.Build(nameof(Element.Group), nameof(Element.Name));
+        var measure = PivotMeasure<Element>.Sum(nameof(Element.Molar));
+        measure.Format = "0.0";
+        Measures.Add(measure);
         ready = true;
     }
 }
