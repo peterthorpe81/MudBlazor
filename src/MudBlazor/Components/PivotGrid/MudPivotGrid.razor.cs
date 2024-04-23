@@ -45,7 +45,7 @@ namespace MudBlazor
 
         private PivotTable<T> _pivot;
 
-       
+
 
         /// <summary>
         /// Set true for rows with a narrow height
@@ -108,7 +108,12 @@ namespace MudBlazor
         /// </summary>
         [Parameter] public MeasureArrangementType MeasureArrangement { get; set; } = MeasureArrangementType.Horisontal;
 
-
+        /// <summary>
+        /// The color of the component. It supports the theme colors.
+        /// </summary>
+        [Parameter]
+        [Category(CategoryTypes.Button.Appearance)]
+        public Color Color { get; set; } = Color.Primary;
 
         //public string TotalCssClass { get; set; } = "GrandTotal";
         //[Parameter] public string TotalTitle { get; set; } = Localizer["MudPivotGrid.GrandTotal"];
@@ -136,6 +141,8 @@ namespace MudBlazor
         protected string _style =>
             new StyleBuilder()
                 .AddStyle("overflow-x", "auto", when: HorizontalScrollbar)
+            .AddStyle("--pivot-color", $"var(--mud-palette-{Color.ToDescriptionString()})")
+            .AddStyle("--pivot-color-text", $"var(--mud-palette-{Color.ToDescriptionString()}-text)")
                 .AddStyle(Style)
             .Build();
 

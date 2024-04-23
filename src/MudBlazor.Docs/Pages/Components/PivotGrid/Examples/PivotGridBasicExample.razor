@@ -6,27 +6,20 @@
 
 @if (ready)
 {
-    <MudPivotGrid T="Element" @ref="pivot" Items="@_elements" Columns=@Columns Rows="@Rows" Measures="@Measures"                
-        RowRenderTotal="true"
-        RowTotalCssClass="GrandTotal"
-        RowTotalTitle="GrandTotal"
-        RowTotalPosition=OutputPosition.Below
-                  ColumnRenderTotal="true"
-        ColumnTotalCssClass="GrandTotal"
-        ColumnTotalTitle="GrandTotal"
-        ColumnTotalPosition=OutputPosition.Below>   </MudPivotGrid>
+    <MudPivotGrid T="PivotData" @ref="pivot" Items="@_PivotData" Columns=@Columns Rows="@Rows" Measures="@Measures"
+        RowTotalPosition=OutputPosition.Below ColumnTotalPosition=OutputPosition.Below>   </MudPivotGrid>
 }
 
 
 @code {
-    private IEnumerable<Element> _elements = new List<Element>();
+    private IEnumerable<PivotData> _PivotData = new List<PivotData>();
 
-    public List<PivotColumn<Element>> Columns { get; set; } = new List<PivotColumn<Element>>();
-    public List<PivotColumn<Element>> Rows { get; set; } = new List<PivotColumn<Element>>();
-    public List<PivotMeasure<Element>> Measures { get; set; } = new List<PivotMeasure<Element>>();
-    //public PivotTableRenderOption<Element> PivotTableRenderOption = new MudBlazor.PivotTableRenderOption<Element>();
+    public List<PivotColumn<PivotData>> Columns { get; set; } = new List<PivotColumn<PivotData>>();
+    public List<PivotColumn<PivotData>> Rows { get; set; } = new List<PivotColumn<PivotData>>();
+    public List<PivotMeasure<PivotData>> Measures { get; set; } = new List<PivotMeasure<PivotData>>();
+    //public PivotTableRenderOption<PivotData> PivotTableRenderOption = new MudBlazor.PivotTableRenderOption<PivotData>();
 
-    public MudPivotGrid<Element> pivot = null;
+    public MudPivotGrid<PivotData> pivot = null;
     public bool ready = false;
     protected override async Task OnInitializedAsync()
     {
@@ -35,20 +28,58 @@
         var columnOptions = new PivotAxisRenderOption() { TotalTitle = "Title Col", RenderTotal = true, TotalCssClass = "TotalCol" };
         var rowOptions = new PivotAxisRenderOption() { TotalTitle = "Total Row", RenderTotal = true, TotalCssClass = "TotalRow" };
         */
-        //PivotTableRenderOption.HeaderCellOption[pivot.ColumnByName(nameof(Element.Molar))].RenderTotal = true;
-        //PivotTableRenderOption.HeaderCellOption[pivot.ColumnByName(nameof(Element.Molar))].TotalTitle = "test title";
-        //PivotTableRenderOption.HeaderCellOption[pivot.ColumnByName(nameof(Element.Molar))].TotalCssClass = "test css";
+        //PivotTableRenderOption.HeaderCellOption[pivot.ColumnByName(nameof(PivotData.Molar))].RenderTotal = true;
+        //PivotTableRenderOption.HeaderCellOption[pivot.ColumnByName(nameof(PivotData.Molar))].TotalTitle = "test title";
+        //PivotTableRenderOption.HeaderCellOption[pivot.ColumnByName(nameof(PivotData.Molar))].TotalCssClass = "test css";
+
+
+        await Task.Yield();
+        _PivotData = new List<PivotData>()
+        {
+            new PivotData("A", "A1", "AX", "1", "1A", 20, 1),
+            new PivotData("A", "A2", "AY", "1", "1A", 19, 2),
+            new PivotData("A", "A2", "AY", "2", "2A", 18, 3),
+            new PivotData("B", "B1", "AX", "1", "1B", 17, 4),
+            new PivotData("B", "B2", "AY", "1", "1A", 16, 5),
+            new PivotData("B", "B3", "AY", "2", "2A", 15, 6),
+            new PivotData("C", "C1", "AX", "2", "2A", 14, 7),
+            new PivotData("C", "C2", "AY", "1", "1A", 13, 8),
+            new PivotData("C", "C3", "AY", "1", "1A", 12, 9)
+        };
 
 
 
-        _elements = await httpClient.GetFromJsonAsync<List<Element>>("webapi/periodictable");
-
-        Columns = PivotColumn<Element>.Build(nameof(Element.Position), nameof(Element.Group));
+        Rows = PivotColumn<PivotData>.Build(nameof(PivotData.Category), nameof(PivotData.SubCategory), nameof(PivotData.SubCategory2));
         //Columns[0].Options
-          Rows = PivotColumn<Element>.Build(nameof(Element.Group), nameof(Element.Name));
-        var measure = PivotMeasure<Element>.Sum(nameof(Element.Molar));
-        measure.Format = "0.0";
+        Columns = PivotColumn<PivotData>.Build(nameof(PivotData.Type), nameof(PivotData.SubType));
+        var measure = PivotMeasure<PivotData>.Sum(nameof(PivotData.Value));
+        measure.Format = "0"; 
+        var measure2 = PivotMeasure<PivotData>.Sum(nameof(PivotData.Value2));
+        measure2.Format = "0.0";
         Measures.Add(measure);
+        Measures.Add(measure2);
         ready = true;
+    }
+
+    public class PivotData
+    {
+        public PivotData(string category, string subCategory, string subCategory2, string type, string subType, int value, int value2)
+        {
+            Category = category;
+            SubCategory = subCategory;
+            SubCategory2 = subCategory2;
+            Type = type;
+            SubType = subType;
+            Value = value;
+            Value2 = value2;
+        }
+
+        public string Category { get; set; }
+        public string SubCategory { get; set; }
+        public string SubCategory2 { get; set; }
+        public string Type { get; set; }
+        public string SubType { get; set; }
+        public int Value { get; set; }
+        public int Value2 { get; set; }
     }
 }
