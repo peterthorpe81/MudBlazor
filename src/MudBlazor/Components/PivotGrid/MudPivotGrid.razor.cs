@@ -13,7 +13,7 @@ using MudBlazor.Utilities;
 namespace MudBlazor
 {
     public enum HeaderType { Row, Column }
-    public enum MeasureArrangementType { Horisontal, Vertical }
+    public enum MeasureArrangementType { Horizontal, Vertical }
     public enum OutputPosition { Above, Below, None }
 
     public class PivotAxisRenderOption
@@ -106,7 +106,7 @@ namespace MudBlazor
         /// <summary>
         /// Measures are arranged Horizontally or vertically
         /// </summary>
-        [Parameter] public MeasureArrangementType MeasureArrangement { get; set; } = MeasureArrangementType.Horisontal;
+        [Parameter] public MeasureArrangementType MeasureArrangement { get; set; } = MeasureArrangementType.Horizontal;
 
         /// <summary>
         /// The color of the component. It supports the theme colors.
@@ -131,10 +131,10 @@ namespace MudBlazor
               .AddClass("mud-pivot-grid")
               .AddClass("mud-table-dense", Dense)
               .AddClass("mud-table-hover", Hover)
-              .AddClass("mud-table-bordered")
               .AddClass("mud-table-outlined", Outlined)
               .AddClass("mud-table-square", Square)
               .AddClass($"mud-elevation-{Elevation}", !Outlined)
+
              .AddClass(Class)
            .Build();
 
@@ -170,7 +170,7 @@ namespace MudBlazor
 
         protected string _measureTitleClass => new CssBuilder("mud-pivot-measure-title").AddClass("mud-table-cell").Build();
         protected string _rowTitleClass => new CssBuilder("mud-pivot-row-title").AddClass("mud-table-cell").Build();
-        protected string _columnTitleClass => new CssBuilder("mud-pivot-column-title").AddClass("mud-table-cell").Build();
+        //protected string _columnTitleClass => new CssBuilder("mud-pivot-column-title").AddClass("mud-table-cell").Build();
         protected string _cornerClass => new CssBuilder("mud-pivot-corner").AddClass("mud-table-cell").Build();
 
         internal string CellClass => new CssBuilder("mud-table-cell").Build();

@@ -6,8 +6,14 @@
 
 @if (ready)
 {
+    <MudPivotGrid T="PivotData" @ref="pivot" Items="@_PivotData" Columns=@Columns2 Rows="@Rows2" Measures="@Measures2"
+        RowTotalPosition=OutputPosition.Below ColumnTotalPosition=OutputPosition.Below Color="Color.Secondary" Dense="true" Hover="true"
+                  MeasureArrangement="MeasureArrangementType.Vertical">   </MudPivotGrid>
+
+
     <MudPivotGrid T="PivotData" @ref="pivot" Items="@_PivotData" Columns=@Columns Rows="@Rows" Measures="@Measures"
-        RowTotalPosition=OutputPosition.Below ColumnTotalPosition=OutputPosition.Below>   </MudPivotGrid>
+                  RowTotalPosition=OutputPosition.Below ColumnTotalPosition=OutputPosition.Below Color="Color.Secondary" Dense="true" Hover="true"
+                  MeasureArrangement="MeasureArrangementType.Horizontal">   </MudPivotGrid>
 }
 
 
@@ -17,6 +23,10 @@
     public List<PivotColumn<PivotData>> Columns { get; set; } = new List<PivotColumn<PivotData>>();
     public List<PivotColumn<PivotData>> Rows { get; set; } = new List<PivotColumn<PivotData>>();
     public List<PivotMeasure<PivotData>> Measures { get; set; } = new List<PivotMeasure<PivotData>>();
+
+    public List<PivotColumn<PivotData>> Columns2 { get; set; } = new List<PivotColumn<PivotData>>();
+    public List<PivotColumn<PivotData>> Rows2 { get; set; } = new List<PivotColumn<PivotData>>();
+    public List<PivotMeasure<PivotData>> Measures2 { get; set; } = new List<PivotMeasure<PivotData>>();
     //public PivotTableRenderOption<PivotData> PivotTableRenderOption = new MudBlazor.PivotTableRenderOption<PivotData>();
 
     public MudPivotGrid<PivotData> pivot = null;
@@ -58,6 +68,19 @@
         measure2.Format = "0.0";
         Measures.Add(measure);
         Measures.Add(measure2);
+
+
+        Rows2 = PivotColumn<PivotData>.Build(nameof(PivotData.Category), nameof(PivotData.SubCategory), nameof(PivotData.SubCategory2));
+        //Columns[0].Options
+        Columns2 = PivotColumn<PivotData>.Build(nameof(PivotData.Type), nameof(PivotData.SubType));
+        var measure3 = PivotMeasure<PivotData>.Sum(nameof(PivotData.Value));
+        measure3.Format = "0";
+        var measure4 = PivotMeasure<PivotData>.Sum(nameof(PivotData.Value2));
+        measure4.Format = "0";
+        Measures2.Add(measure3);
+        Measures2.Add(measure4);
+
+
         ready = true;
     }
 
