@@ -8,12 +8,12 @@
 {
     <MudPivotGrid T="PivotData" @ref="pivot" Items="@_PivotData" Columns=@Columns2 Rows="@Rows2" Measures="@Measures2"
         RowTotalPosition=OutputPosition.Below ColumnTotalPosition=OutputPosition.Below Color="Color.Secondary" Dense="true" Hover="true"
-                  MeasureArrangement="MeasureArrangementType.Vertical">   </MudPivotGrid>
+                  MeasureArrangement="MeasureArrangementType.Vertical" RenderHeaderTitles="true">   </MudPivotGrid>
 
 
     <MudPivotGrid T="PivotData" @ref="pivot" Items="@_PivotData" Columns=@Columns Rows="@Rows" Measures="@Measures"
                   RowTotalPosition=OutputPosition.Below ColumnTotalPosition=OutputPosition.Below Color="Color.Secondary" Dense="true" Hover="true"
-                  MeasureArrangement="MeasureArrangementType.Horizontal">   </MudPivotGrid>
+                  MeasureArrangement="MeasureArrangementType.Horizontal" RenderHeaderTitles="true">   </MudPivotGrid>
 }
 
 
@@ -47,6 +47,7 @@
         _PivotData = new List<PivotData>()
         {
             new PivotData("A", "A1", "AX", "1", "1A", 20, 1),
+            new PivotData("A", "A1", "AT", "1", "1A", 20, 1),
             new PivotData("A", "A2", "AY", "1", "1A", 19, 2),
             new PivotData("A", "A2", "AY", "2", "2A", 18, 3),
             new PivotData("B", "B1", "AX", "1", "1B", 17, 4),

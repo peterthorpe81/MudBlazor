@@ -25,6 +25,14 @@
                             {
                                 <th class="@_cornerClass" colspan="@cornerColumns" rowspan="@cornerRows"></th>
                             }
+                            @if (IsVertical && RenderHeaderTitles && i + 1 == RowRender.MaxDepth)
+                            {
+                               @for (int j = 0; j < ColRender.MaxDepth; j++)
+                                    {
+                                        var inverseDepth = ColRender.MaxDepth - j;
+                                        <th class="@_rowTitleClass dpth-@inverseDepth tmph">@ColRender.HeaderTitle(j)</th>
+                                    }
+                            }
                             @if (RenderHeaderTitles)
                             {
                                 var inverseDepth = RowRender.MaxDepth - i;
@@ -80,55 +88,111 @@
                         // isRowTotal = false;
                         int inverseDepth = 0;                       
                         //var isT = leaf.Children == null ? true : false;
-                        <tr class="@_rowClass tmpa" @key="leaf">
-                            @foreach (var cell in path)
-                        {
-                            if (!levelFound && cell != newLeaf)
-                                continue;
-                            levelFound = true;
-                            //isRowTotal = false;
+                        
 
-                            var rowSpan = cell.Leaf.Count() * VerticalMeasureRatio;
-                            var isTotal = (cell is PivotTableTotalColumnRender<T>);
-                            int depth = isTotal ? cell.depth - 1 : cell.depth;
-                            var colSpan = (isTotal ? ColRender.MaxDepth - cell.depth : 1);
-                            inverseDepth = ColRender.MaxDepth - depth;
-                            @if (colSpan > 0)
-                            {
-                                    var calcClass = new CssBuilder(CellClass).AddClass($"dpth-{inverseDepth}").AddClass(TotalClass, isTotal).Build();
-                                <th class="@calcClass" colspan="@colSpan" rowspan="@rowSpan">@cell.Title</th>
-                                //isRowTotal = true;
-                            }   
-                        }
+                        
 
                         @if (IsVertical)
                         {
-                            @foreach (var measure in _pivot.Measures)
-                            {                               
-                                <tr class="@_rowClass tmpgx">
-                                    @*Component RenderMeasureTitleCell *@
-                                    <th class="@_measureTitleClass tmp1">@measure.Title</th>
+                            <tr class="@_rowClass tmpa" @key="leaf">
+                                @foreach (var cell in path)
+                                {
+                                    if (!levelFound && cell != newLeaf)
+                                        continue;
+                                    levelFound = true;
+                                    //isRowTotal = false;
 
-                                    @foreach (var colHeaderCell in RowRender.Leaves)
+                                    var rowSpan = cell.Leaf.Count() * VerticalMeasureRatio;
+                                    var isTotal = (cell is PivotTableTotalColumnRender<T>);
+                                    int depth = isTotal ? cell.depth - 1 : cell.depth;
+                                    var colSpan = (isTotal ? ColRender.MaxDepth - cell.depth : 1);
+                                    inverseDepth = ColRender.MaxDepth - depth;
+                                   // @if (colSpan > 0)
+                                    //{
+                                        //isRowTotal = true;
+                                    //}
+                                    @if (isTotal && ColRender.MaxDepth == cell.depth)
+
+                                    { }
+                                    else
                                     {
-                                        //Console.WriteLine(isRowTotal);
-                                        var inverseRowDepth = RowRender.MaxDepth - colHeaderCell.depth;
-                                        //var totalDepth = (inverseDepth + inverseRowDepth);
-                                        var totalDepth = (inverseDepth + inverseRowDepth) - 1; // isRowTotal ? inverseDepth + inverseRowDepth : inverseRowDepth;
 
-                                        var calcClass = new CssBuilder(CellClass).AddClass($"dpth-{totalDepth}").AddClass(TotalClass, totalDepth > 0).Build();
-                                        <td class="@calcClass tmpl">@_pivot[leaf.Cell, colHeaderCell.Cell, measure].ToString(measure.Format)</td>
+                                        var calcClass = new CssBuilder(CellClass).AddClass($"dpth-{inverseDepth}").AddClass(TotalClass, isTotal).Build();
+                                        <th class="@calcClass" colspan="@colSpan" rowspan="@rowSpan">@cell.Title</th>
                                     }
-                                    @*if (measure != _pivot.Measures.Last())
-                                    {
-                                        @((MarkupString)($"</tr><tr class=\"{_rowClass} tmpg\">"));
-                                    }*@
-                                </tr>
+                                }
+                                @{
+                                    var firstMeasure = _pivot.Measures.First();
+                                    var calcClassM = new CssBuilder(_measureTitleClass).AddClass($"dpth-{inverseDepth - 1}")/*.AddClass(TotalClass, isTotal)*/.Build();
+
+                                }
+
+                                <th class="@calcClassM tmp1">@firstMeasure.Title</th>
+
+                                @foreach (var colHeaderCell in RowRender.Leaves)
+                                {
+                                    //Console.WriteLine(isRowTotal);
+                                    var inverseRowDepth = RowRender.MaxDepth - colHeaderCell.depth;
+                                    //var totalDepth = (inverseDepth + inverseRowDepth);
+                                    var totalDepth = (inverseDepth + inverseRowDepth) - 1; // isRowTotal ? inverseDepth + inverseRowDepth : inverseRowDepth;
+
+                                    var calcClass = new CssBuilder(CellClass).AddClass($"dpth-{totalDepth}").AddClass(TotalClass, totalDepth > 0).Build();
+                                    <td class="@calcClass tmpk">@_pivot[leaf.Cell, colHeaderCell.Cell, firstMeasure].ToString(firstMeasure.Format)</td>
+                                }
+                            </tr>
+                            bool first = true;
+                            @foreach (var measure in _pivot.Measures)
+                            {         
+                            if (first)
+                            {
+                                first = false;
+                                continue;
                             }
+                            <tr class="@_rowClass tmpgx">
+                                @*Component RenderMeasureTitleCell *@
+                                    @{
+                                        var calcClassMX = new CssBuilder(_measureTitleClass).AddClass($"dpth-{inverseDepth - 1}")/*.AddClass(TotalClass, isTotal)*/.Build();
+                                    }
+                                    <th class="@calcClassMX tmp1">@measure.Title</th>
+
+                                @foreach (var colHeaderCell in RowRender.Leaves)
+                                {
+                                    //Console.WriteLine(isRowTotal);
+                                    var inverseRowDepth = RowRender.MaxDepth - colHeaderCell.depth;
+                                    //var totalDepth = (inverseDepth + inverseRowDepth);
+                                    var totalDepth = (inverseDepth + inverseRowDepth) - 1; // isRowTotal ? inverseDepth + inverseRowDepth : inverseRowDepth;
+
+                                    var calcClass = new CssBuilder(CellClass).AddClass($"dpth-{totalDepth}").AddClass(TotalClass, totalDepth > 0).Build();
+                                    <td class="@calcClass tmpk">@_pivot[leaf.Cell, colHeaderCell.Cell, measure].ToString(measure.Format)</td>
+                                }
+                            </tr>
+                            }
+                            
                         }
                         else
                         {
-                            foreach (var colHeaderCell in RowRender.Leaves)
+                            <tr class="@_rowClass tmpa" @key="leaf">
+                            @foreach (var cell in path)
+                            {
+                                if (!levelFound && cell != newLeaf)
+                                    continue;
+                                levelFound = true;
+                                //isRowTotal = false;
+
+                                var rowSpan = cell.Leaf.Count() * VerticalMeasureRatio;
+                                var isTotal = (cell is PivotTableTotalColumnRender<T>);
+                                int depth = isTotal ? cell.depth - 1 : cell.depth;
+                                var colSpan = (isTotal ? ColRender.MaxDepth - cell.depth : 1);
+                                inverseDepth = ColRender.MaxDepth - depth;
+                                @if (colSpan > 0)
+                                {
+                                    var calcClass = new CssBuilder(CellClass).AddClass($"dpth-{inverseDepth}").AddClass(TotalClass, isTotal).Build();
+                                <th class="@calcClass" colspan="@colSpan" rowspan="@rowSpan">@cell.Title</th>
+                                    //isRowTotal = true;
+                                }
+                            }
+
+                            @foreach (var colHeaderCell in RowRender.Leaves)
                             {
                                 foreach (var measure in _pivot.Measures)
                                 {
@@ -144,8 +208,9 @@
                                     <td class="@calcClass @totalDepth tmpk">@_pivot[leaf.Cell, colHeaderCell.Cell, measure].ToString(measure.Format)</td>
                                 }
                             }
+
+                            </tr>
                         }
-                    </tr>
 
                 }
             </tbody>
