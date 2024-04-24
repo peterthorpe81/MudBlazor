@@ -131,14 +131,8 @@
 
                                 @foreach (var colHeaderCell in RowRender.Leaves)
                                 {
-                                    //Console.WriteLine(isRowTotal);
                                     var inverseRowDepth = RowRender.MaxDepth - colHeaderCell.RenderDepth;
-                                    //var totalDepth = (inverseDepth + inverseRowDepth);
                                     var totalDepth = (inverseColDepth + inverseRowDepth); // isRowTotal ? inverseDepth + inverseRowDepth : inverseRowDepth;
-
-                                    /*bool? showTotals = colHeaderCell.Cell?.Column?.Options?.ShowTotalsForSingleValues;
-                                    if (showTotals == false)
-                                        totalDepth--;*/
 
                                     var calcClass = new CssBuilder(CellClass).AddClass($"dpth-{totalDepth}").AddClass(TotalClass, totalDepth > 0).Build();
                                     <td class="@calcClass tmpka @RowRender.MaxDepth @colHeaderCell.depth @inverseColDepth">@_pivot[leaf.Cell, colHeaderCell.Cell, firstMeasure].ToString(firstMeasure.Format)</td>
@@ -210,26 +204,15 @@
                                 foreach (var measure in _pivot.Measures)
 
                                 {
-                                        var leafs = colHeaderCell.Leaf.Count();
-
-                            var paths = colHeaderCell.Path.Count();
-                                        var isColTotal = (colHeaderCell is PivotTableTotalColumnRender<T>);
-                                        var isLeafTotal = (leaf is PivotTableTotalColumnRender<T>);
-                                            
-                                        //colHeaderCell.Cell.
-                                    //colHeaderCell.IsFirstChild
-                                    //colHeaderCell.depth;
-                                        var lastChild = colHeaderCell.IsLastChild;
-                                        var children = colHeaderCell.Children.Any();
-                                        //ColRender.MaxDepth - cell.depth
                                         
-                                        //var inverseRowDepth = (tmp == false) ? (RowRender.MaxDepth - colHeaderCell.depth) - 1 : RowRender.MaxDepth - colHeaderCell.depth;*/
-                                        //var inverseRowDepth = (tmp == true && (isRowTotal2 || isColTotal)) ? RowRender.MaxDepth - colHeaderCell.depth : RowRender.MaxDepth - colHeaderCell.depth - 1;
+                                        var isColTotal = (colHeaderCell is PivotTableTotalColumnRender<T>);                                        
                                         var inverseRowDepth = RowRender.MaxDepth - colHeaderCell.RenderDepth;
 
                                         var totalDepth = inverseColDepth;
                                         if (!isRowTotal && !isColTotal)
                                             totalDepth--;
+                                        if (inverseRowDepth == 1 && !isRowTotal)
+                                            totalDepth++;
 
                                        /* if (inverseRowDepth > 0)
                                             totalDepth++;*/
@@ -246,23 +229,7 @@
                                         // if (isRowTotal)
                                         //    totalDepth++;
 
-                                        //var totalDepth = (inverseDepth + inverseRowDepth);
-                                       /* var totalDepth = (inverseColDepth + inverseRowDepth) - 1;
-                                        if (isColTotal && !isRowTotal)
-                                            totalDepth++;*/
-                                        /* (isRowTotal || isColTotal)
-                                            totalDepth*/
-                                        /*bool? showTotals = colHeaderCell.Cell?.Column?.Options?.ShowTotalsForSingleValues;
-                                        if (showTotals == false)
-                                            totalDepth--;*/
-                                        /* if (!isColTotal)
-                                            totalDepth--;
-                                        if (!isRowTotal2)
-                                            totalDepth--;*/
-                                        //: 0; // isRowTotal ? inverseDepth + inverseRowDepth : inverseRowDepth;
-                                                                                               //var totalDepth = lastChild ? (inverseDepth + inverseRowDepth) - 1 : (inverseDepth + inverseRowDepth) - 2;
-
-                                        //var d = colHeaderCell.depth;
+                                       
                                     var calcClass = new CssBuilder(CellClass).AddClass($"dpth-{totalDepth}").AddClass(TotalClass, totalDepth > 0).Build();
                                         <td class="@calcClass @totalDepth tmpkc 
     RowRender.MaxDepth: @RowRender.MaxDepth
@@ -274,11 +241,6 @@
     totalDepth:         @totalDepth 
     isRowTotal:         @isRowTotal
     isColTotal:         @isColTotal
-    isLeafTotal:        @isLeafTotal
-    lastChild:          @lastChild
-    children:           @children
-    leafs:              @leafs
-    paths:              @paths
     colleafs:           @colLeafs
     colpaths:           @colPaths">
                                             @_pivot[leaf.Cell, colHeaderCell.Cell, measure].ToString(measure.Format)</td>
