@@ -13,6 +13,8 @@ namespace MudBlazor
         internal PivotTableColumnRender<T> Parent { get; private set; }
         internal int depth { get; set; }
 
+        internal int RenderDepth { get => Cell?.Column?.Options?.ShowTotalsForSingleValues == false ? depth + 1 : depth; }
+
         public string Title { get; protected set; }
 
         internal List<PivotTableColumnRender<T>> Children { get; private set; } = new List<PivotTableColumnRender<T>>();
@@ -23,22 +25,28 @@ namespace MudBlazor
             Cell = current;
             Parent = parent;
             Title = Cell == null ? headerOption.TotalTitle : Cell.Title;
+           
             depth = Parent == null ? 0 : Parent.depth + 1;
 
             if (Cell == null)
                 return;
+
+            var currentLevelOption = Cell.Column.Options;// option.HeaderCellOption[Cell.Column];
+
             // if total cell , no child
             if (this is PivotTableTotalColumnRender<T>)
                 return;
-
-            var currentLevelOption = Cell.Column.Options;// option.HeaderCellOption[Cell.Column];
-            if (currentLevelOption.TotalPosition == OutputPosition.Above) {
+            //test
+            if ((currentLevelOption.ShowTotalsForSingleValues || Cell.Children.Count() > 1)
+                && currentLevelOption.TotalPosition == OutputPosition.Above) {
                 Children.Add(new PivotTableTotalColumnRender<T>(Cell, grid, currentLevelOption, this));
             }
             foreach (var child in Cell.Children) {
                 Children.Add(new PivotTableColumnRender<T>(child, grid, currentLevelOption, this));
             }
-            if (currentLevelOption.TotalPosition == OutputPosition.Below) {
+            if (
+            (currentLevelOption.ShowTotalsForSingleValues || Cell.Children.Count() > 1)
+                && currentLevelOption.TotalPosition == OutputPosition.Below) {
                 Children.Add(new PivotTableTotalColumnRender<T>(Cell, grid, currentLevelOption, this));
             }
         }

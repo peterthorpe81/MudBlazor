@@ -17,10 +17,11 @@ namespace MudBlazor
     public enum OutputPosition { Above, Below, None }
 
     public class PivotAxisRenderOption
-    {    
+    {
         public string TotalCssClass { get; set; } = "mud-pivot-total";
         public string TotalTitle { get; set; } = "Total";
         public OutputPosition TotalPosition { get; set; } = OutputPosition.Below;
+        public bool ShowTotalsForSingleValues { get; set; } = false;
     }
 
     [RequiresUnreferencedCode("Calls System.Linq.Expressions.Expression.Property(Expression, String)")]

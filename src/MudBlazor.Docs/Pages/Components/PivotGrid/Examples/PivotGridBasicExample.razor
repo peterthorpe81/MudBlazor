@@ -10,8 +10,16 @@
         RowTotalPosition=OutputPosition.Below ColumnTotalPosition=OutputPosition.Below Color="Color.Secondary" Dense="true" Hover="true"
                   MeasureArrangement="MeasureArrangementType.Vertical" RenderHeaderTitles="true">   </MudPivotGrid>
 
+    <MudPivotGrid T="PivotData" @ref="pivot" Items="@_PivotData" Columns=@Columns3 Rows="@Rows3" Measures="@Measures3"
+                  RowTotalPosition=OutputPosition.Below ColumnTotalPosition=OutputPosition.Below Color="Color.Secondary" Dense="true" Hover="true"
+                  MeasureArrangement="MeasureArrangementType.Vertical" RenderHeaderTitles="true">   </MudPivotGrid>
+
 
     <MudPivotGrid T="PivotData" @ref="pivot" Items="@_PivotData" Columns=@Columns Rows="@Rows" Measures="@Measures"
+                  RowTotalPosition=OutputPosition.Below ColumnTotalPosition=OutputPosition.Below Color="Color.Secondary" Dense="true" Hover="true"
+                  MeasureArrangement="MeasureArrangementType.Horizontal" RenderHeaderTitles="true">   </MudPivotGrid>
+
+    <MudPivotGrid T="PivotData" @ref="pivot" Items="@_PivotData" Columns=@Columns3 Rows="@Rows3" Measures="@Measures3"
                   RowTotalPosition=OutputPosition.Below ColumnTotalPosition=OutputPosition.Below Color="Color.Secondary" Dense="true" Hover="true"
                   MeasureArrangement="MeasureArrangementType.Horizontal" RenderHeaderTitles="true">   </MudPivotGrid>
 }
@@ -27,6 +35,10 @@
     public List<PivotColumn<PivotData>> Columns2 { get; set; } = new List<PivotColumn<PivotData>>();
     public List<PivotColumn<PivotData>> Rows2 { get; set; } = new List<PivotColumn<PivotData>>();
     public List<PivotMeasure<PivotData>> Measures2 { get; set; } = new List<PivotMeasure<PivotData>>();
+
+    public List<PivotColumn<PivotData>> Columns3 { get; set; } = new List<PivotColumn<PivotData>>();
+    public List<PivotColumn<PivotData>> Rows3 { get; set; } = new List<PivotColumn<PivotData>>();
+    public List<PivotMeasure<PivotData>> Measures3 { get; set; } = new List<PivotMeasure<PivotData>>();
     //public PivotTableRenderOption<PivotData> PivotTableRenderOption = new MudBlazor.PivotTableRenderOption<PivotData>();
 
     public MudPivotGrid<PivotData> pivot = null;
@@ -60,9 +72,15 @@
 
 
 
-        Rows = PivotColumn<PivotData>.Build(nameof(PivotData.Category), nameof(PivotData.SubCategory), nameof(PivotData.SubCategory2));
+        Rows = PivotColumn<PivotData>.Build(nameof(PivotData.Category), nameof(PivotData.SubCategory), nameof(PivotData.SubCategory2)); 
+        //[0].Options.ShowTotalsForSingleValues = true;
+        //Rows[1].Options.ShowTotalsForSingleValues = true;
+        //[2].Options.ShowTotalsForSingleValues = true;
         //Columns[0].Options
         Columns = PivotColumn<PivotData>.Build(nameof(PivotData.Type), nameof(PivotData.SubType));
+        //Columns[0].Options.ShowTotalsForSingleValues = true;
+        //Columns[1].Options.ShowTotalsForSingleValues = true;
+
         var measure = PivotMeasure<PivotData>.Sum(nameof(PivotData.Value));
         measure.Format = "0"; 
         var measure2 = PivotMeasure<PivotData>.Sum(nameof(PivotData.Value2));
@@ -70,10 +88,27 @@
         Measures.Add(measure);
         Measures.Add(measure2);
 
+        Rows3 = PivotColumn<PivotData>.Build(nameof(PivotData.Category), nameof(PivotData.SubCategory), nameof(PivotData.SubCategory2));
+        Rows3[0].Options.ShowTotalsForSingleValues = true;
+        Rows3[1].Options.ShowTotalsForSingleValues = true;
+        Rows3[2].Options.ShowTotalsForSingleValues = true;
+        //Columns[0].Options
+        Columns3 = PivotColumn<PivotData>.Build(nameof(PivotData.Type), nameof(PivotData.SubType));
+        Columns3[0].Options.ShowTotalsForSingleValues = true;
+        Columns3[1].Options.ShowTotalsForSingleValues = true;
+        Measures3.Add(PivotMeasure<PivotData>.Sum(nameof(PivotData.Value)));
+        Measures3.Add(PivotMeasure<PivotData>.Sum(nameof(PivotData.Value2)));
 
-        Rows2 = PivotColumn<PivotData>.Build(nameof(PivotData.Category), nameof(PivotData.SubCategory), nameof(PivotData.SubCategory2));
+
+        Rows2 = PivotColumn<PivotData>.Build(nameof(PivotData.Category), nameof(PivotData.SubCategory), nameof(PivotData.SubCategory2)); 
+       /* Rows2[0].Options.ShowTotalsForSingleValues = true;
+        Rows2[1].Options.ShowTotalsForSingleValues = true;
+        Rows2[2].Options.ShowTotalsForSingleValues = true;*/
         //Columns[0].Options
         Columns2 = PivotColumn<PivotData>.Build(nameof(PivotData.Type), nameof(PivotData.SubType));
+        //Columns2[0].Options.ShowTotalsForSingleValues = true;
+        //Columns2[1].Options.ShowTotalsForSingleValues = true;
+
         var measure3 = PivotMeasure<PivotData>.Sum(nameof(PivotData.Value));
         measure3.Format = "0";
         var measure4 = PivotMeasure<PivotData>.Sum(nameof(PivotData.Value2));
