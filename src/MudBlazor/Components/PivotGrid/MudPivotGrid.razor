@@ -187,6 +187,7 @@
                             <tr class="@_rowClass tmpa" @key="leaf">
                             @foreach (var cell in path)
                                 {
+                                    //isRowTotal = false;
                                     if (!levelFound && cell != newLeaf)
                                     continue;
                                 levelFound = true;
@@ -200,8 +201,8 @@
                                 {
                                         var calcClass = new CssBuilder(CellClass).AddClass($"dpth-{inverseColDepth}").AddClass(TotalClass, isTotal).Build();
                                     <th class="@calcClass" colspan="@colSpan" rowspan="@rowSpan">@cell.Title</th>
-                                    isRowTotal = true;
-                                }
+                                        isRowTotal = isTotal;
+                                    }
                             }
 
                             @foreach (var colHeaderCell in RowRender.Leaves)
@@ -227,8 +228,11 @@
                                         var inverseRowDepth = RowRender.MaxDepth - colHeaderCell.RenderDepth;
 
                                         var totalDepth = inverseColDepth;
-                                        if (inverseRowDepth > 0)
-                                            totalDepth++;
+                                        if (!isRowTotal && !isColTotal)
+                                            totalDepth--;
+
+                                       /* if (inverseRowDepth > 0)
+                                            totalDepth++;*/
                                         /*working crosses 1 depth above
                                         if (!isColTotal)
                                         totalDepth--;
@@ -238,8 +242,8 @@
 
                                         /*working crosses are the same colour*/
                                         //if (!isColTotal && !isRowTotal)
-                                        //    totalDepth--;
-                                        //if (isRowTotal)
+                                         //   totalDepth--;
+                                        // if (isRowTotal)
                                         //    totalDepth++;
 
                                         //var totalDepth = (inverseDepth + inverseRowDepth);
