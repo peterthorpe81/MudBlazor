@@ -15,7 +15,13 @@ namespace MudBlazor
         internal PivotTableColumnRender<T> Parent { get; private set; }
         internal int depth { get; set; }
 
-        internal int RenderDepth { get => Cell?.Column?.Options?.ShowTotalsForSingleValues == false ? depth + 1 : depth; }
+
+        //internal int RenderDepth { get => Cell?.Column?.Options?.ShowTotalsForSingleValues == false ? depth + 1 : depth; }
+
+        internal int GetRenderDepth(PivotTableHeaderRender<T> render)
+        {
+            return (render.MaxDepth - depth);// - 1;
+        }
 
         internal CellType CellType
         {

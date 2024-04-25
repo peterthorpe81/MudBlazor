@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Contracts;
 using System.Linq;
@@ -41,6 +42,14 @@ namespace MudBlazor
         [Parameter]
         public List<PivotMeasure<T>> Measures { get; set; }
 
+
+        [Parameter]
+        public bool HighlightCrossedTotals { get; set; } = true;
+
+        [Parameter]
+        public bool ShowTotalsForSingleValues { get; set; } = true;
+        
+
         //[Parameter]
         //public PivotTableRenderOption<T> Options { get; set; }
 
@@ -51,81 +60,104 @@ namespace MudBlazor
         /// <summary>
         /// Set true for rows with a narrow height
         /// </summary>
-        [Parameter] public bool Dense { get; set; }
+        [Parameter]
+        [Category(CategoryTypes.General.Appearance)]
+        public bool Dense { get; set; }
 
         /// <summary>
         /// Set true to see rows hover on mouse-over.
         /// </summary>
-        [Parameter] public bool Hover { get; set; }
+        [Parameter]
+        [Category(CategoryTypes.General.Appearance)]
+        public bool Hover { get; set; }
 
         /// <summary>
         /// If true, table will be outlined.
         /// </summary>
-        [Parameter] public bool Outlined { get; set; }
+        [Parameter]
+        [Category(CategoryTypes.General.Appearance)]
+        public bool Outlined { get; set; }
 
         /// <summary>
         /// Set true to disable rounded corners
         /// </summary>
-        [Parameter] public bool Square { get; set; }
+        [Parameter]
+        [Category(CategoryTypes.General.Appearance)]
+        public bool Square { get; set; }
 
         /// <summary>
         /// The higher the number, the heavier the drop-shadow. 0 for no shadow.
         /// </summary>
-        [Parameter] public int Elevation { set; get; } = 1;
+        [Parameter]
+        [Category(CategoryTypes.General.Appearance)]
+        public int Elevation { set; get; } = 1;
 
         /// <summary>
         /// Defines if the table has a horizontal scrollbar.
         /// </summary>
-        [Parameter] public bool HorizontalScrollbar { get; set; }
+        [Parameter]
+        [Category(CategoryTypes.General.Appearance)]
+        public bool HorizontalScrollbar { get; set; }
 
         /// <summary>
         /// Setting a height will allow to scroll the table. If not set, it will try to grow in height. You can set this to any CSS value that the
         /// attribute 'height' accepts, i.e. 500px.
         /// </summary>
-        [Parameter] public string Height { get; set; }
+        [Parameter]
+        [Category(CategoryTypes.General.Appearance)]
+        public string Height { get; set; }
+
+        /// <summary>
+        /// The color of the component, used to highlight totals. A CSS fitler is applied for total depth.
+        /// </summary>
+        [Parameter]
+        [Category(CategoryTypes.General.Appearance)]
+        public Color Color { get; set; } = Color.Primary;
 
         /// <summary>
         /// Add a class to the thead tag
         /// </summary>
-        [Parameter] public string HeaderClass { get; set; }
+        [Parameter]
+        [Category(CategoryTypes.General.Appearance)]
+        public string HeaderClass { get; set; }
 
         /// <summary>
         /// CSS class for the table rows. Note, many CSS settings are overridden by MudTd though
         /// </summary>
-        [Parameter] public string RowClass { get; set; }
-
-        /// <summary>
-        /// Returns the class that will get joined with RowClass. Takes the current item and row index.
-        /// </summary>
-        [Parameter] public Func<PivotTableColumnRender<T>, string> MeasureClassFunc { get; set; }
-
-        /// <summary>
-        /// Returns the class that will get joined with RowClass. Takes the current item and row index.
-        /// </summary>
-        [Parameter] public Func<PivotTableColumnRender<T>, string> MeasureStyleFunc { get; set; }
+        [Parameter]
+        [Category(CategoryTypes.General.Appearance)]
+        public string RowClass { get; set; }
 
         /// <summary>
         /// Measures are arranged Horizontally or vertically
         /// </summary>
-        [Parameter] public MeasureArrangementType MeasureArrangement { get; set; } = MeasureArrangementType.Horizontal;
+        [Parameter]
+        [Category(CategoryTypes.General.Behavior)] 
+        public MeasureArrangementType MeasureArrangement { get; set; } = MeasureArrangementType.Horizontal;
 
         /// <summary>
-        /// The color of the component. It supports the theme colors.
+        /// Row totals display above, below or none
         /// </summary>
         [Parameter]
-        [Category(CategoryTypes.Button.Appearance)]
-        public Color Color { get; set; } = Color.Primary;
+        [Category(CategoryTypes.General.Behavior)]
+        public OutputPosition RowTotalPosition { get; set; } = OutputPosition.Below;
 
-        //public string TotalCssClass { get; set; } = "GrandTotal";
-        //[Parameter] public string TotalTitle { get; set; } = Localizer["MudPivotGrid.GrandTotal"];
-        //[Parameter] public bool RenderRowTotals { get; set; } = true;
-        //[Parameter] public bool RenderColumnTotals { get; set; } = true;
+        /// <summary>
+        /// Column totals display above, below or none
+        /// </summary>
+        [Parameter]
+        [Category(CategoryTypes.General.Behavior)]
+        public OutputPosition ColTotalPosition { get; set; } = OutputPosition.Below;
 
-        internal string TotalTitle { get; set; }
+        /// <summary>
+        /// Header titles are shown
+        /// </summary>
+        [Parameter]
+        [Category(CategoryTypes.General.Behavior)]
+        public bool ShowHeaderTitles { get; set; } = true;
 
-        [Parameter] public bool RenderHeaderTitles { get; set; } = true;
-        [Parameter] public OutputPosition RowTotalPosition { get; set; } = OutputPosition.Below;
-        [Parameter] public OutputPosition ColumnTotalPosition { get; set; } = OutputPosition.Below;
+
+        
 
         protected string _classname =>
            new CssBuilder("mud-table")
@@ -158,36 +190,93 @@ namespace MudBlazor
             new CssBuilder("mud-table-container")
             .Build();
 
-        protected string _totalClass =>
-            new CssBuilder("mud-pivot-total").AddClass("mud-table-cell")
-            .Build();
-
         protected string _headClassname => new CssBuilder("mud-table-head")
             .AddClass(HeaderClass).Build();
 
         protected string _headRowClassname => new CssBuilder("mud-pivot-head-row").Build();
-
         protected string _rowClass => new CssBuilder("mud-table-row").AddClass(RowClass).Build();
-
-        protected string _measureTitleClass => new CssBuilder("mud-pivot-measure-title").AddClass("mud-table-cell").Build();
-        protected string _rowTitleClass => new CssBuilder("mud-pivot-row-title").AddClass("mud-table-cell").Build();
-        //protected string _columnTitleClass => new CssBuilder("mud-pivot-column-title").AddClass("mud-table-cell").Build();
-        protected string _cornerClass => new CssBuilder("mud-pivot-corner").AddClass("mud-table-cell").Build();
-
-        internal string CellClass => new CssBuilder("mud-table-cell").Build();
-        internal string TotalClass => new CssBuilder("mud-pivot-total").Build();
+        protected string _cornerClass => new CssBuilder("corner").AddClass("mud-table-cell").Build();
 
 
-         internal Dictionary<HeaderType, PivotAxisRenderOption> Header;
+        internal string MeasureClass(CellType colType, int colDepth, CellType rowType, int rowDepth/*, int cssDepth*/)
+        {
+            int cssDepth = Math.Max(rowDepth, colDepth);
+
+            if (colType == CellType.Value && rowType == CellType.Value)
+                cssDepth--;
+
+            if (HighlightCrossedTotals && rowType != CellType.Value && colType != CellType.Value)
+            {
+                cssDepth++;
+            }
+            /*if (colType == CellType.SubTotal && rowType != CellType.Value)
+                cssDepth++;
+
+            if (colType == CellType.GrandTotal && rowType != CellType.Value)
+                cssDepth = cssDepth + 2;*/
+
+
+            return new CssBuilder("mud-table-cell")
+                .AddClass($"measure")
+                .AddClass($"td-{cssDepth}")
+                .AddClass($"cd-{colDepth}")
+                .AddClass($"rd-{rowDepth}")
+                .AddClass($"rt-{colType}")
+                .AddClass($"ct-{rowType}").Build();
+        }
+
+        internal string MeasureTitleClass(CellType type, int cssDepth)
+        {
+            if (type == CellType.Value)
+                cssDepth--;
+
+            return new CssBuilder("mud-table-cell")
+                .AddClass("measure-title")
+                .AddClass($"td-{cssDepth}")
+                .AddClass($"mt-{type}")
+                .Build();
+        }
+
+        internal string RowTitleClass(int cssDepth)
+        {
+            return new CssBuilder("mud-table-cell")
+                .AddClass($"row-title")
+                .AddClass($"td-{cssDepth}").Build();
+        }
+        
+        internal string ColTitleClass(int cssDepth)
+        {
+            return new CssBuilder("mud-table-cell")
+                .AddClass($"col-title")
+                .AddClass($"td-{cssDepth}").Build();
+        }
+
+        internal string RowHeaderClass(CellType rowType, int rowDepth, int cssDepth)
+        {
+            return new CssBuilder("mud-table-cell")
+                .AddClass($"r-header")
+                .AddClass($"td-{cssDepth}")
+                .AddClass($"rd-{rowDepth}")
+                .AddClass($"rt-{rowType}").Build();
+        }
+
+        internal string ColHeaderClass(CellType colType, int colDepth, int cssDepth)
+        {
+            return new CssBuilder("mud-table-cell")
+                .AddClass($"c-header")
+                .AddClass($"td-{cssDepth}")
+                .AddClass($"cd-{colDepth}")
+                .AddClass($"ct-{colType}").Build();
+        }
+
+
+        internal Dictionary<HeaderType, PivotAxisRenderOption> Header;
 
         protected override async Task OnParametersSetAsync()
         {
-
-            TotalTitle = Localizer["MudPivotGrid.GrandTotal"];
-
             Header = new Dictionary<HeaderType, PivotAxisRenderOption>() {
-                { HeaderType.Row , new PivotAxisRenderOption() { TotalPosition = RowTotalPosition, TotalTitle =  TotalTitle, TotalCssClass = TotalClass } },
-                { HeaderType.Column , new PivotAxisRenderOption() { TotalPosition = ColumnTotalPosition, TotalTitle = TotalTitle, TotalCssClass = TotalClass  } }        
+                { HeaderType.Row , new PivotAxisRenderOption() { TotalPosition = RowTotalPosition, TotalTitle =  Localizer["MudPivotGrid.GrandTotal"] } },
+                { HeaderType.Column , new PivotAxisRenderOption() { TotalPosition = ColTotalPosition, TotalTitle = Localizer["MudPivotGrid.GrandTotal"]  } }        
             };
 
 

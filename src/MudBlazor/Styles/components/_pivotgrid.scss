@@ -1,9 +1,9 @@
 
 .mud-pivot-grid {
-  @for $i from 2 through 6 {
-    .mud-table-cell.dpth-#{$i} {
+  @for $i from 1 through 6 {
+    .mud-table-cell.td-#{$i} {
       color: var(--pivot-color-text);
-      background: hsl(from var(--pivot-color) h s calc(l - ($i - 1) * 0.075));
+      background: hsl(from var(--pivot-color) h s calc(l - ($i - 2) * 0.075));
     }
   }
 
