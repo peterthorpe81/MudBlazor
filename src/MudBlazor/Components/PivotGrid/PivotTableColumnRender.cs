@@ -8,12 +8,27 @@ using MudBlazor.Pivot;
 
 namespace MudBlazor 
 {
+    internal enum CellType { Value, SubTotal, GrandTotal }
+
     public class PivotTableColumnRender<T> {
         public PivotHeaderCell<T> Cell { get; private set; }
         internal PivotTableColumnRender<T> Parent { get; private set; }
         internal int depth { get; set; }
 
         internal int RenderDepth { get => Cell?.Column?.Options?.ShowTotalsForSingleValues == false ? depth + 1 : depth; }
+
+        internal CellType CellType
+        {
+            get
+            {
+                if (Cell == null)
+                    return CellType.GrandTotal;
+                if (Cell.HasChildren)
+                    return CellType.SubTotal;
+
+                return CellType.Value;
+            }
+        }
 
         public string Title { get; protected set; }
 
