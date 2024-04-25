@@ -31,7 +31,7 @@
                   MeasureArrangement="MeasureArrangementType.Horizontal" RenderHeaderTitles="_renderHeaderTitles"
                   HighlightCrossedTotals="_highlightCrossedTotals">   </MudPivotGrid>
 
-    <MudPivotGrid T="PivotData" @ref="pivot" Items="@_PivotData" Columns=@Columns Rows="@Rows" Measures="@Measures"
+    <MudPivotGrid T="PivotData" @ref="pivot" Items="@_PivotData" Columns=@Columns Rows="@Rows" Measures="@Measures2"
         RowTotalPosition=_rowTotalPosition ColumnTotalPosition=_colTotalPosition Color="Color.Secondary" Dense="true" Hover="true"
                   MeasureArrangement="MeasureArrangementType.Vertical" RenderHeaderTitles="_renderHeaderTitles" 
                   HighlightCrossedTotals="_highlightCrossedTotals">   </MudPivotGrid>
@@ -109,25 +109,28 @@ new PivotData("B","B2","B2B","D","D2",39,10)
     public List<PivotColumn<PivotData>> Columns { get; set; } = new List<PivotColumn<PivotData>>();
     public List<PivotColumn<PivotData>> Rows { get; set; } = new List<PivotColumn<PivotData>>();
     public List<PivotMeasure<PivotData>> Measures { get; set; } = new List<PivotMeasure<PivotData>>();
+    public List<PivotMeasure<PivotData>> Measures2 { get; set; } = new List<PivotMeasure<PivotData>>();
 
     public MudPivotGrid<PivotData> pivot = null;
     public bool ready = false;
     protected override async Task OnInitializedAsync()
     {
         await Task.Yield();
-        
+
         Rows = PivotColumn<PivotData>.Build(new PivotAxisRenderOption() { TotalPosition = _rowTotalPosition, ShowTotalsForSingleValues = _showRowTotalsForSingleValues },
             nameof(PivotData.Category), nameof(PivotData.SubCategory), nameof(PivotData.SubCategory2));
 
         Columns = PivotColumn<PivotData>.Build(new PivotAxisRenderOption() { TotalPosition = _colTotalPosition, ShowTotalsForSingleValues = _showColTotalsForSingleValues },
             nameof(PivotData.Type), nameof(PivotData.SubType));
-       
-        var measure = PivotMeasure<PivotData>.Sum(nameof(PivotData.Value));
+
+        Measures = PivotMeasure<PivotData>.Build(nameof(PivotData.Value), nameof(PivotData.Value2));
+        Measures2 = PivotMeasure<PivotData>.Build(nameof(PivotData.Value), nameof(PivotData.Value2));
+        /*var measure = PivotMeasure<PivotData>.Sum(nameof(PivotData.Value));
         measure.Format = "0"; 
         var measure2 = PivotMeasure<PivotData>.Sum(nameof(PivotData.Value2));
         measure2.Format = "0.0";
-        Measures.Add(measure);
-        Measures.Add(measure2);
+        Measures.Add(measure);*/
+        //Measures.Add(measure2);
 
         ready = true;
     }
