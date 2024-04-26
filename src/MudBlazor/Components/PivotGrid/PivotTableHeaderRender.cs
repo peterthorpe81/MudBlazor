@@ -38,7 +38,7 @@ namespace MudBlazor
             {
                 rootCells.Add(new PivotTableTotalColumnRender<T>(null, grid, headerOption));
             }
-            if (headerOption.TotalPosition == OutputPosition.Below) {
+            if (headerOption.TotalPosition == TotalPosition.Start) {
                 rootCells.Add(new PivotTableTotalColumnRender<T>(null, grid, headerOption));
             }
         }
