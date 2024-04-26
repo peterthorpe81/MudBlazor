@@ -19,13 +19,14 @@ namespace MudBlazor
 
     public class PivotAxisRenderOption
     {
-        public string TotalCssClass { get; set; } = "mud-pivot-total";
+        //public string TotalCssClass { get; set; } = "mud-pivot-total";
         public string TotalTitle { get; set; } = "Total";
         public OutputPosition TotalPosition { get; set; } = OutputPosition.Below;
         public bool ShowTotalsForSingleValues { get; set; } = false;
     }
 
     [RequiresUnreferencedCode("Calls System.Linq.Expressions.Expression.Property(Expression, String)")]
+    [CascadingTypeParameter(nameof(T))]
     public partial class MudPivotGrid<T> : MudComponentBase
     {
         //private PivotTableRenderOption<T> Option { get; set; }
@@ -171,8 +172,14 @@ namespace MudBlazor
         /// <summary>
         /// The Columns that make up the data grid. Add Column components to this RenderFragment.
         /// </summary>
-        [Parameter] public RenderFragment ColumnsRf { get; set; }
+        [Parameter] public RenderFragment Fields { get; set; }
 
+        public readonly List<Field<T>> FieldSet = new List<Field<T>>();
+
+        internal void AddField(Field<T> field)
+        {
+            FieldSet.Add(field);
+        }
 
         protected string _classname =>
            new CssBuilder("mud-table")

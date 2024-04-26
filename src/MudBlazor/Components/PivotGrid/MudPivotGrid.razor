@@ -6,7 +6,9 @@
 @inject InternalMudLocalizer Localizer
 
 
-<CascadingValue IsFixed="true" Value="this">@ColumnsRf</CascadingValue>
+<CascadingValue IsFixed="true" Value="this">@Fields</CascadingValue>
+
+<CascadingValue IsFixed="true" Value="this">
 
 <div id="@guid"  class="@_classname" style="@_style" @key="@guid">
     @if (Items is not null && Columns is not null && Rows is not null && Measures is not null &&
@@ -212,3 +214,4 @@
         </div>
     }
 </div>
+</CascadingValue>
