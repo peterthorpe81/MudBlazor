@@ -36,8 +36,6 @@ namespace MudBlazor
         public IEnumerable<T> Items { get; set; }
 
 
-        [Parameter]
-        public List<PivotMeasure<T>> Measures { get; set; }
 
 
         [Parameter]
@@ -53,6 +51,8 @@ namespace MudBlazor
         private List<PivotColumn<T>> _columns { get; set; }
 
         private List<PivotColumn<T>> _rows { get; set; }
+
+        public List<PivotMeasure<T>> _measures { get; set; }
 
 
         /// <summary>
@@ -174,15 +174,26 @@ namespace MudBlazor
 
 
         /// <summary>
-        /// The Columns that make up the data grid. Add Column components to this RenderFragment.
+        /// The Fields that make up the pivot grid. Add Field components to this RenderFragment.
         /// </summary>
         [Parameter] public RenderFragment Fields { get; set; }
 
+        /// <summary>
+        /// The Measures that make up the pivot grid. Add Measure components to this RenderFragment.
+        /// </summary>
+        [Parameter] public RenderFragment Measures { get; set; }
+
         public readonly List<BaseField<T>> FieldSet = new List<BaseField<T>>();
+        public readonly List<BaseMeasure<T>> MeasureSet = new List<BaseMeasure<T>>();
 
         internal void AddField(BaseField<T> field)
         {
             FieldSet.Add(field);
+        }
+
+        internal void AddMeasure(BaseMeasure<T> measure)
+        {
+            MeasureSet.Add(measure);
         }
 
         protected string _classname =>
@@ -346,9 +357,18 @@ namespace MudBlazor
                     }));
             }
 
+            foreach (var measure in MeasureSet)
+            {
+                var m = new PivotMeasure<T>(measure.AggregateName, title: measure.Title);
+                m.aggregate = measure.AggregateFunc; 
+                m.Format = measure.Format;
+               
+                _measures.Add(m);
+            }
+
             if (Items != null)
             {
-                _pivot = new PivotTable<T>(Items, _rows, _columns, Measures);
+                _pivot = new PivotTable<T>(Items, _rows, _columns, _measures);
                 RowRender = new PivotTableHeaderRender<T>(Axis.Row, _pivot.ColHeaders, this);
                 ColRender = new PivotTableHeaderRender<T>(Axis.Column, _pivot.RowHeaders, this);
             }

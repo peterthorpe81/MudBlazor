@@ -17,16 +17,11 @@ using MudBlazor.Utilities.Expressions;
 
 namespace MudBlazor
 {
-
 #nullable enable
-    public abstract partial class BaseField<T> : MudComponentBase
+    public abstract partial class BaseMeasure<T> : MudComponentBase
     {
         [Parameter]
         public string? Title { get; set; }
-
-        [Parameter]
-        [EditorRequired]
-        public Axis Axis { get; set; }
 
         [Parameter]
         public string? Format { get; set; }
@@ -34,24 +29,13 @@ namespace MudBlazor
         [CascadingParameter]
         public MudPivotGrid<T>? PivotGrid { get; set; }
 
-        [Parameter]
-        public TotalPosition? TotalPosition { get; set; } = MudBlazor.TotalPosition.End;
+        protected internal virtual LambdaExpression? AggregateExpression { get; }
 
-        [Parameter]
-        public bool? ShowTotalsForSingleValues { get; set; } = false;
+        public virtual string? AggregateName { get; }
 
-        protected internal virtual LambdaExpression? PropertyExpression { get; }
+        protected internal abstract object AggregateFunc(IEnumerable<TProperty> item);
 
-        public virtual string? PropertyName { get; }
-
-        protected internal abstract object? PropertyFunc(T item);
-
-        protected internal virtual Type? PropertyType { get; }
-
-        protected internal string? TotalTitle { get; set; }
+        protected internal virtual Type? AggregateType { get; }
     }
-
-    
-
 #nullable disable
 }

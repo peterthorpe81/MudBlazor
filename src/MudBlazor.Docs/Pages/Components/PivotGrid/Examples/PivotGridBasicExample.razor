@@ -53,7 +53,7 @@
         <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Refresh">Refresh</MudButton>
     </div>
 
-    <MudPivotGrid T="PivotData" Items="@_PivotData" Measures="@Measures"
+    <MudPivotGrid T="PivotData" Items="@_PivotData" 
                   RowTotalPosition=_rowTotalPosition ColTotalPosition=_colTotalPosition Color="Color.Secondary" Dense="true" Hover="true"
                   MeasureArrangement="MeasureArrangementType.Horizontal" ShowHeaderTitles="_showHeaderTitles"
                   HighlightCrossedTotals="_highlightCrossedTotals" 
@@ -71,6 +71,9 @@
                     <Field Property="x => x.Value" Title="Value" Axis="Axis.None" />
             <Field Property="x => x.Value2" Title="Value2" Axis="Axis.None" />
                   </Fields>
+                  <Measures>
+                      <Measure Aggregate="x=> x.  .Sum()" Title="Value"></Measure>
+                  </Measures>
 
               </MudPivotGrid>
 

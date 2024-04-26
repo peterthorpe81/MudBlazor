@@ -82,7 +82,7 @@ namespace MudBlazor.Pivot
         /// <summary>
         /// delegate aggregate 
         /// </summary>
-        public Func<IEnumerable<decimal>, decimal> aggregate { get; protected set; } = aggregate_sum;
+        public Func<IEnumerable<decimal>, decimal> aggregate { get; set; } = aggregate_sum;
 
         #region aggregate functions
         private static Func<IEnumerable<decimal>, decimal> aggregate_sum = (list) => list.Any()?list.Sum():0;

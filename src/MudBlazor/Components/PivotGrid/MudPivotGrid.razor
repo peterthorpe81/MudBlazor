@@ -11,8 +11,8 @@
 <CascadingValue IsFixed="true" Value="this">
 
 <div class="@_classname" style="@_style">
-    @if (Items is not null && _columns is not null && _rows is not null && Measures is not null &&
-        Items.Any() && Measures.Any())
+    @if (Items is not null && _columns is not null && _rows is not null && _measures is not null &&
+        Items.Any() && _measures.Any())
     {
 
         <div class="@_tableClass" style="@_tableStyle" @attributes="UserAttributes">
