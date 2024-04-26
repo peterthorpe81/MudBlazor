@@ -26,7 +26,8 @@ namespace MudBlazor
     }
 
     [RequiresUnreferencedCode("Calls System.Linq.Expressions.Expression.Property(Expression, String)")]
-    public partial class MudPivotGrid<T> : MudComponentBase {
+    public partial class MudPivotGrid<T> : MudComponentBase
+    {
         //private PivotTableRenderOption<T> Option { get; set; }
         private bool IsVertical => MeasureArrangement == MeasureArrangementType.Vertical;
 
@@ -99,6 +100,14 @@ namespace MudBlazor
         [Category(CategoryTypes.General.Appearance)]
         public bool HorizontalScrollbar { get; set; }
 
+
+        /// <summary>
+        /// Defines if the table has fixed headers
+        /// </summary>
+        [Parameter]
+        [Category(CategoryTypes.General.Appearance)]
+        public bool FixedHeader { get; set; } = false;
+
         /// <summary>
         /// Setting a height will allow to scroll the table. If not set, it will try to grow in height. You can set this to any CSS value that the
         /// attribute 'height' accepts, i.e. 500px.
@@ -157,7 +166,13 @@ namespace MudBlazor
         public bool ShowHeaderTitles { get; set; } = true;
 
 
-        
+
+
+        /// <summary>
+        /// The Columns that make up the data grid. Add Column components to this RenderFragment.
+        /// </summary>
+        [Parameter] public RenderFragment ColumnsRf { get; set; }
+
 
         protected string _classname =>
            new CssBuilder("mud-table")
@@ -168,7 +183,7 @@ namespace MudBlazor
               .AddClass("mud-table-square", Square)
               .AddClass($"mud-elevation-{Elevation}", !Outlined)
 
-             .AddClass(Class)
+             //.AddClass(Class)
            .Build();
 
         protected string _style =>
@@ -176,7 +191,7 @@ namespace MudBlazor
                 .AddStyle("overflow-x", "auto", when: HorizontalScrollbar)
             .AddStyle("--pivot-color", $"var(--mud-palette-{Color.ToDescriptionString()})")
             .AddStyle("--pivot-color-text", $"var(--mud-palette-{Color.ToDescriptionString()}-text)")
-                .AddStyle(Style)
+             //   .AddStyle(Style)
             .Build();
 
         protected string _tableStyle =>
@@ -191,6 +206,7 @@ namespace MudBlazor
             .Build();
 
         protected string _headClassname => new CssBuilder("mud-table-head")
+            .AddClass("mud-pivot-grid-sticky-header", FixedHeader)
             .AddClass(HeaderClass).Build();
 
         protected string _headRowClassname => new CssBuilder("mud-pivot-head-row").Build();
@@ -271,13 +287,18 @@ namespace MudBlazor
 
 
         internal Dictionary<HeaderType, PivotAxisRenderOption> Header;
-
+        internal string guid;
         protected override async Task OnParametersSetAsync()
         {
+            guid = Guid.NewGuid().ToString();
+            await base.OnParametersSetAsync();
+            // if (Header == null)
+            //{
             Header = new Dictionary<HeaderType, PivotAxisRenderOption>() {
                 { HeaderType.Row , new PivotAxisRenderOption() { TotalPosition = RowTotalPosition, TotalTitle =  Localizer["MudPivotGrid.GrandTotal"] } },
-                { HeaderType.Column , new PivotAxisRenderOption() { TotalPosition = ColTotalPosition, TotalTitle = Localizer["MudPivotGrid.GrandTotal"]  } }        
-            };
+                { HeaderType.Column , new PivotAxisRenderOption() { TotalPosition = ColTotalPosition, TotalTitle = Localizer["MudPivotGrid.GrandTotal"]  } }
+                };
+            //}
 
 
             if (Items != null)
@@ -288,7 +309,6 @@ namespace MudBlazor
                 ColRender = new PivotTableHeaderRender<T>(HeaderType.Column, _pivot.RowHeaders, this);
 
             }
-            await base.OnParametersSetAsync();
         }
 
         public PivotColumn<T> ColumnByName(string columnName)

@@ -7,6 +7,20 @@
     }
   }
 
+  .measure-title, .corner {
+    background-color: var(--mud-palette-background);
+  }
+
+  .mud-pivot-grid-sticky-header {
+    position: sticky;
+    top: 0;
+  }
+
+  .r-header {
+   // position: sticky;
+    //left: auto;
+  }
+
   .mud-pivot-total {
   }
 

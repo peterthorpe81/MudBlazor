@@ -5,38 +5,41 @@
 @typeparam T
 @inject InternalMudLocalizer Localizer
 
-<div @attributes="UserAttributes" class="@_classname" style="@_style">
+
+<CascadingValue IsFixed="true" Value="this">@ColumnsRf</CascadingValue>
+
+<div id="@guid"  class="@_classname" style="@_style" @key="@guid">
     @if (Items is not null && Columns is not null && Rows is not null && Measures is not null &&
         Items.Any() && Measures.Any())
     {
 
-        <div class="@_tableClass" style="@_tableStyle">
-        <table class="mud-table-root" data-hRows="@ColHeaderRowCount" data-hCols="@RowHeaderColCount">
+        <div class="@_tableClass" style="@_tableStyle" @attributes="UserAttributes" @key=@Guid.NewGuid()>
+            <table class="mud-table-root" data-hRows="@ColHeaderRowCount" data-hCols="@RowHeaderColCount" @key=@Guid.NewGuid()>
 
             @*Render Headers*@
             @{
                 var cornerRows = ColHeaderRowCount - (ShowHeaderTitles ? 1 : 0);
                 var cornerColumns = RowHeaderColCount - (ShowHeaderTitles ? 1 : 0);
-                    <thead class="@_headClassname">
+                    <thead class="@_headClassname" @key=@Guid.NewGuid()>
                     @for (var i = 0; i < RowRender.MaxDepth; i++)
                     {
-                        <tr class="@_headRowClassname">
+                            <tr class="@_headRowClassname" @key=@Guid.NewGuid()>
                             @if (i == 0)
                             {
-                                <th class="@_cornerClass" colspan="@cornerColumns" rowspan="@cornerRows"></th>
+                                    <th class="@_cornerClass" colspan="@cornerColumns" rowspan="@cornerRows" @key=@Guid.NewGuid()></th>
                             }
                             @if (IsVertical && ShowHeaderTitles && i + 1 == RowRender.MaxDepth)
                             {
                                @for (int j = 0; j < ColRender.MaxDepth; j++)
                                 {
-                                    <th class="@RowTitleClass(ColRender.MaxDepth - j) tmph">@ColRender.HeaderTitle(j)</th>
+                                        <th class="@RowTitleClass(ColRender.MaxDepth - j) tmph" @key=@Guid.NewGuid()>@ColRender.HeaderTitle(j)</th>
                                 }
                             }
                             @{var inverseDepth = RowRender.MaxDepth - i; }
 
                             @if (ShowHeaderTitles)
                             {
-                                <th class="@ColTitleClass(inverseDepth) tmps">@RowRender.HeaderTitle(i)</th>
+                                    <th class="@ColTitleClass(inverseDepth) tmps" @key=@Guid.NewGuid()>@RowRender.HeaderTitle(i)</th>
                             }
                             @foreach (var cell in RowRender[i])
                             {                                
@@ -45,18 +48,18 @@
                                 var rowSpan = (isTotal ? cell.GetRenderDepth(ColRender) : 1);
                                 @if (ShowHeaderTitles && isTotal)
                                     rowSpan--;
-                                <th class="@ColHeaderClass(cell.CellType, inverseDepth, inverseDepth) tmpx" colspan="@leafCount" rowspan="@rowSpan">@cell.Title</th>
+                                    <th @key=@Guid.NewGuid() class="@ColHeaderClass(cell.CellType, inverseDepth, inverseDepth) tmpx" colspan="@leafCount" rowspan="@rowSpan">@cell.Title</th>
                             }
                         </tr>
                     }
                     @if (!IsVertical)
                     {
-                        <tr class="@_headRowClassname">
+                            <tr class="@_headRowClassname" @key=@Guid.NewGuid()>
                             @if (ShowHeaderTitles)
                             {
                                 @for (int i = 0; i < ColRender.MaxDepth; i++)
                                 {
-                                    <th class="@RowTitleClass(ColRender.MaxDepth - i) tmph2">@ColRender.HeaderTitle(i)</th>
+                                        <th class="@RowTitleClass(ColRender.MaxDepth - i) tmph2" @key=@Guid.NewGuid()>@ColRender.HeaderTitle(i)</th>
                                 }
                             }
                             @foreach (var cell in RowRender.Leaves)
@@ -64,7 +67,7 @@
                                 @foreach (var measure in _pivot.Measures)
                                 {                                        
                                     /*Component RenderMeasureTitleCell */
-                                    <th class="@MeasureTitleClass(cell.CellType, cell.GetRenderDepth(RowRender)) dfdf">@measure.Title</th>
+                                        <th class="@MeasureTitleClass(cell.CellType, cell.GetRenderDepth(RowRender)) dfdf" @key=@Guid.NewGuid()>@measure.Title</th>
                                 }
                             }
                         </tr>
@@ -73,7 +76,7 @@
 
             }
             @*Render Rows*@
-            <tbody class="mud-table-body">
+                <tbody class="mud-table-body" @key=@Guid.NewGuid()>
                 @foreach (var leaf in ColRender.Leaves)
                 {
                     var path = leaf.Path;
@@ -85,7 +88,7 @@
 
                         @if (IsVertical)
                         {
-                            <tr class="@_rowClass tmpa" @key="leaf">
+                            <tr class="@_rowClass tmpa" @key=@Guid.NewGuid()>
                                 @foreach (var cell in path)
                                 {
                                     if (!levelFound && cell != newLeaf)
@@ -103,17 +106,17 @@
                                     {
                                         rowDepth = cell.GetRenderDepth(ColRender);
                                         rowType = cell.CellType;
-                                        <th class="@RowHeaderClass(rowType, rowDepth, rowDepth)" colspan="@colSpan" rowspan="@rowSpan">@cell.Title</th>
+                                        <th  @key=@Guid.NewGuid() class="@RowHeaderClass(rowType, rowDepth, rowDepth)" colspan="@colSpan" rowspan="@rowSpan">@cell.Title</th>
                                     }
                                 }
                                 @{
                                     var firstMeasure = _pivot.Measures.First();
-                                    <th class="@MeasureTitleClass(rowType, rowDepth) tmp1">@firstMeasure.Title</th>
+                                    <th  @key=@Guid.NewGuid() class="@MeasureTitleClass(rowType, rowDepth) tmp1">@firstMeasure.Title</th>
                                 }
 
                                 @foreach (var column in RowRender.Leaves)
                                 {
-                                    <td class="@MeasureClass(column.CellType, column.GetRenderDepth(RowRender), rowType, rowDepth) tmpka">@_pivot[leaf.Cell, column.Cell, firstMeasure].ToString(firstMeasure.Format)</td>
+                                    <td  @key=@Guid.NewGuid() class="@MeasureClass(column.CellType, column.GetRenderDepth(RowRender), rowType, rowDepth) tmpka">@_pivot[leaf.Cell, column.Cell, firstMeasure].ToString(firstMeasure.Format)</td>
                                 }
                             </tr>
                             bool first = true;
@@ -124,13 +127,13 @@
                                 first = false;
                                 continue;
                             }
-                            <tr class="@_rowClass tmpgx">
+                            <tr  @key=@Guid.NewGuid() class="@_rowClass tmpgx">
                                 @*Component RenderMeasureTitleCell *@
                                     <th class="@MeasureTitleClass(rowType, rowDepth) tmp1">@measure.Title</th>
 
                                 @foreach (var column in RowRender.Leaves)
                                 {
-                                        <td class="@MeasureClass(column.CellType, column.GetRenderDepth(RowRender), rowType, rowDepth) tmpkb">@_pivot[leaf.Cell, column.Cell, measure].ToString(measure.Format)</td>
+                                        <td  @key=@Guid.NewGuid() class="@MeasureClass(column.CellType, column.GetRenderDepth(RowRender), rowType, rowDepth) tmpkb">@_pivot[leaf.Cell, column.Cell, measure].ToString(measure.Format)</td>
                                 }
                             </tr>
                             }
@@ -141,7 +144,7 @@
                             rowType = CellType.Value;
                             rowDepth = 0;
 
-                            <tr class="@_rowClass tmpa" @key="leaf">
+                            <tr  @key=@Guid.NewGuid() class="@_rowClass tmpa">
                             @foreach (var cell in path)
                             {
                                 if (!levelFound && cell != newLeaf)
@@ -155,7 +158,7 @@
                                 {
                                         rowDepth = cell.GetRenderDepth(ColRender);
                                         rowType = cell.CellType;
-                                    <th class="@RowHeaderClass(rowType, rowDepth, rowDepth)" colspan="@colSpan" rowspan="@rowSpan">@cell.Title</th>
+                                        <th @key=@Guid.NewGuid() class="@RowHeaderClass(rowType, rowDepth, rowDepth)" colspan="@colSpan" rowspan="@rowSpan">@cell.Title</th>
                                 }
                             }
 
@@ -195,7 +198,7 @@
                                         if (colHeaderCell.ColumnType == ColumnType.Value  && rowType == CellType.Value)
                                             totalDepth--;
                                         */
-                                        <td class="@MeasureClass(column.CellType, column.GetRenderDepth(RowRender), rowType, rowDepth) tmpkc">
+                                        <td  @key=@Guid.NewGuid() class="@MeasureClass(column.CellType, column.GetRenderDepth(RowRender), rowType, rowDepth) tmpkc">
                                             @_pivot[leaf.Cell, column.Cell, measure].ToString(measure.Format)</td>
                                 }
                             }
