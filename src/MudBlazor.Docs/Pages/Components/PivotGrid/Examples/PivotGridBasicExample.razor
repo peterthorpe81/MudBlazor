@@ -37,7 +37,12 @@
     <MudPivotGrid T="PivotData" Items="@_PivotData" Columns=@Columns Rows="@Rows" Measures="@Measures"
                   RowTotalPosition=_rowTotalPosition ColTotalPosition=_colTotalPosition Color="Color.Secondary" Dense="true" Hover="true"
                   MeasureArrangement="MeasureArrangementType.Horizontal" ShowHeaderTitles="_showHeaderTitles"
-                  HighlightCrossedTotals="_highlightCrossedTotals">   </MudPivotGrid>
+                  HighlightCrossedTotals="_highlightCrossedTotals"> 
+              <Fields>
+                <Field Property="x => x.Category" Title="Category" />
+            </Fields>
+
+              </MudPivotGrid>
 
    <!-- <MudPivotGrid T="PivotData" @ref="pivot2" Items="@_PivotData2" Columns=@Columns2 Rows="@Rows2" Measures="@Measures2"
         RowTotalPosition=_rowTotalPosition ColTotalPosition=_colTotalPosition Color="Color.Secondary" Dense="true" Hover="true"

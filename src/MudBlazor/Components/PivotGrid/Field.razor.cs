@@ -17,11 +17,32 @@ using MudBlazor.Utilities.Expressions;
 
 namespace MudBlazor
 {
-    public class Field<T, TProperty> : MudComponentBase
+
+#nullable enable
+    public abstract class Field<T> : MudComponentBase
     {
 
-        [CascadingParameter] 
-        public MudPivotGrid<T> PivotGrid { get; set; }
+        [Parameter] public string? Title { get; set; }
+
+        [Parameter]
+        public string? Format { get; set; }
+
+        protected internal virtual LambdaExpression? PropertyExpression { get; }
+
+        public virtual string? PropertyName { get; }
+
+        protected internal abstract object? PropertyFunc(T item);
+
+        protected internal virtual Type? PropertyType { get; }
+    }
+
+    public class Field<T, TProperty> : Field<T>
+    {
+
+        private readonly Guid _id = Guid.NewGuid();
+
+        [CascadingParameter]
+        public MudPivotGrid<T>? PivotGrid { get; set; }
 
 
         [Parameter]
@@ -43,8 +64,6 @@ namespace MudBlazor
         [EditorRequired]
         public Expression<Func<T, TProperty>> Property { get; set; } = Expression.Lambda<Func<T, TProperty>>(Expression.Default(typeof(TProperty)), Expression.Parameter(typeof(T)));
 
-        [Parameter]
-        public string? Format { get; set; }
 
         protected override void OnParametersSet()
         {
@@ -68,12 +87,27 @@ namespace MudBlazor
                 // We can't assign any meaningful name at all, therefore we should assign an unique ID like we do for TemplateColumn
                 _propertyName = _id.ToString();
             }
-            //Title ??= property.GetLastMemberName();
+            Title ??= property.GetLastMemberName();
         }
 
-        protected internal LambdaExpression? PropertyExpression  => Property;
+        protected internal override object? PropertyFunc(T item)
+        {
+            if (_compiledPropertyFunc == null || _compiledPropertyFuncFor != Property)
+            {
+                _compiledPropertyFunc = Property.Compile();
+                _compiledPropertyFuncFor = Property;
+            }
 
-        public string? PropertyName => _propertyName;
+            return _compiledPropertyFunc(item);
+        }
+
+        protected internal override Type PropertyType
+            => typeof(TProperty);
+
+        protected internal override LambdaExpression? PropertyExpression
+            => Property;
+
+        public override string? PropertyName => _propertyName;
 
 
         protected override void OnInitialized()
@@ -82,4 +116,8 @@ namespace MudBlazor
             if (PivotGrid != null)
                 PivotGrid.AddField(this);
         }
+
+    }
+
+#nullable disable
 }
