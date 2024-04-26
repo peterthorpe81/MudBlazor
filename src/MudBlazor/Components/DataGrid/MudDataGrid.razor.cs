@@ -698,7 +698,7 @@ namespace MudBlazor
         {
             get { return _groupable; }
             set
-            {
+            {         
                 if (_groupable != value)
                 {
                     _groupable = value;

@@ -13,15 +13,15 @@ using MudBlazor.Utilities;
 
 namespace MudBlazor
 {
-    public enum HeaderType { Row, Column }
+    public enum Axis { Row, Column, None }
     public enum MeasureArrangementType { Horizontal, Vertical }
-    public enum OutputPosition { Above, Below, None }
+    public enum TotalPosition { Start, End, None }
 
     public class PivotAxisRenderOption
     {
         //public string TotalCssClass { get; set; } = "mud-pivot-total";
         public string TotalTitle { get; set; } = "Total";
-        public OutputPosition TotalPosition { get; set; } = OutputPosition.Below;
+        public TotalPosition TotalPosition { get; set; } = TotalPosition.End;
         public bool ShowTotalsForSingleValues { get; set; } = false;
     }
 
@@ -35,11 +35,6 @@ namespace MudBlazor
         [Parameter]
         public IEnumerable<T> Items { get; set; }
 
-        [Parameter]
-        public List<PivotColumn<T>> Columns { get; set; }
-
-        [Parameter]
-        public List<PivotColumn<T>> Rows { get; set; }
 
         [Parameter]
         public List<PivotMeasure<T>> Measures { get; set; }
@@ -48,15 +43,16 @@ namespace MudBlazor
         [Parameter]
         public bool HighlightCrossedTotals { get; set; } = true;
 
-        [Parameter]
-        public bool ShowTotalsForSingleValues { get; set; } = true;
-        
+
 
         //[Parameter]
         //public PivotTableRenderOption<T> Options { get; set; }
 
         private PivotTable<T> _pivot;
 
+        private List<PivotColumn<T>> _columns { get; set; }
+
+        private List<PivotColumn<T>> _rows { get; set; }
 
 
         /// <summary>
@@ -150,14 +146,22 @@ namespace MudBlazor
         /// </summary>
         [Parameter]
         [Category(CategoryTypes.General.Behavior)]
-        public OutputPosition RowTotalPosition { get; set; } = OutputPosition.Below;
+        public TotalPosition RowTotalPosition { get; set; } = TotalPosition.End;
 
         /// <summary>
         /// Column totals display above, below or none
         /// </summary>
         [Parameter]
         [Category(CategoryTypes.General.Behavior)]
-        public OutputPosition ColTotalPosition { get; set; } = OutputPosition.Below;
+        public TotalPosition ColTotalPosition { get; set; } = TotalPosition.End;
+
+        [Parameter]
+        [Category(CategoryTypes.General.Behavior)]
+        public bool ShowRowTotalsForSingleValues { get; set; } = false;
+
+        [Parameter]
+        [Category(CategoryTypes.General.Behavior)]
+        public bool ShowColTotalsForSingleValues { get; set; } = false;
 
         /// <summary>
         /// Header titles are shown
@@ -174,9 +178,9 @@ namespace MudBlazor
         /// </summary>
         [Parameter] public RenderFragment Fields { get; set; }
 
-        public readonly List<Field<T>> FieldSet = new List<Field<T>>();
+        public readonly List<BaseField<T>> FieldSet = new List<BaseField<T>>();
 
-        internal void AddField(Field<T> field)
+        internal void AddField(BaseField<T> field)
         {
             FieldSet.Add(field);
         }
@@ -274,47 +278,79 @@ namespace MudBlazor
                 .AddClass($"td-{cssDepth}").Build();
         }
 
-        internal string RowHeaderClass(CellType rowType, int rowDepth, int cssDepth)
+        internal string RowHeaderClass(CellType rowType, int rowDepth)
         {
             return new CssBuilder("mud-table-cell")
                 .AddClass($"r-header")
-                .AddClass($"td-{cssDepth}")
+                .AddClass($"td-{rowDepth}")
                 .AddClass($"rd-{rowDepth}")
                 .AddClass($"rt-{rowType}").Build();
         }
 
-        internal string ColHeaderClass(CellType colType, int colDepth, int cssDepth)
+        internal string ColHeaderClass(CellType colType, int colDepth)
         {
             return new CssBuilder("mud-table-cell")
                 .AddClass($"c-header")
-                .AddClass($"td-{cssDepth}")
+                .AddClass($"td-{colDepth}")
                 .AddClass($"cd-{colDepth}")
                 .AddClass($"ct-{colType}").Build();
         }
 
 
-        internal Dictionary<HeaderType, PivotAxisRenderOption> Header;
-        internal string guid;
+        internal Dictionary<Axis, PivotAxisRenderOption> Header;
+        //bool _isFirstRendered = false;
+        protected override async Task OnAfterRenderAsync(bool firstRender)
+        {
+            if (_parametersUpdated)
+            {
+                _parametersUpdated = false;
+                BuildPivot();
+                StateHasChanged();
+            }
+
+            await base.OnAfterRenderAsync(firstRender);
+        }
+
+        bool _parametersUpdated;
         protected override async Task OnParametersSetAsync()
         {
-            guid = Guid.NewGuid().ToString();
             await base.OnParametersSetAsync();
-            // if (Header == null)
-            //{
-            Header = new Dictionary<HeaderType, PivotAxisRenderOption>() {
-                { HeaderType.Row , new PivotAxisRenderOption() { TotalPosition = RowTotalPosition, TotalTitle =  Localizer["MudPivotGrid.GrandTotal"] } },
-                { HeaderType.Column , new PivotAxisRenderOption() { TotalPosition = ColTotalPosition, TotalTitle = Localizer["MudPivotGrid.GrandTotal"]  } }
-                };
-            //}
+            _parametersUpdated = true;
+        }
 
+        private void BuildPivot()
+        {
+            Header = new Dictionary<Axis, PivotAxisRenderOption>() {
+                { Axis.Row , new PivotAxisRenderOption() { TotalPosition = RowTotalPosition, TotalTitle =  Localizer["MudPivotGrid.GrandTotal"], ShowTotalsForSingleValues = ShowRowTotalsForSingleValues  } },
+                { Axis.Column , new PivotAxisRenderOption() { TotalPosition = ColTotalPosition, TotalTitle = Localizer["MudPivotGrid.GrandTotal"], ShowTotalsForSingleValues = ShowColTotalsForSingleValues   } }
+            };
+
+            _rows = new List<PivotColumn<T>>();
+            _columns = new List<PivotColumn<T>>();
+            foreach (var field in FieldSet)
+            {
+                if (field.Axis == Axis.Row)
+                    _rows.Add(new PivotColumn<T>(field.PropertyName, options: new PivotAxisRenderOption()
+                    {
+                        ShowTotalsForSingleValues = field.ShowTotalsForSingleValues ?? ShowRowTotalsForSingleValues,
+                        TotalTitle = field.TotalTitle ?? Localizer["MudPivotGrid.Total"],
+                        TotalPosition = field.TotalPosition ?? RowTotalPosition
+                    }));
+
+                if (field.Axis == Axis.Column)
+                    _columns.Add(new PivotColumn<T>(field.PropertyName, options: new PivotAxisRenderOption()
+                    {
+                        ShowTotalsForSingleValues = field.ShowTotalsForSingleValues ?? ShowColTotalsForSingleValues,
+                        TotalTitle = field.TotalTitle ?? Localizer["MudPivotGrid.Total"],
+                        TotalPosition = field.TotalPosition ?? ColTotalPosition
+                    }));
+            }
 
             if (Items != null)
             {
-                _pivot = new PivotTable<T>(Items, Rows, Columns, Measures);
-
-                RowRender = new PivotTableHeaderRender<T>(HeaderType.Row, _pivot.ColHeaders, this);
-                ColRender = new PivotTableHeaderRender<T>(HeaderType.Column, _pivot.RowHeaders, this);
-
+                _pivot = new PivotTable<T>(Items, _rows, _columns, Measures);
+                RowRender = new PivotTableHeaderRender<T>(Axis.Row, _pivot.ColHeaders, this);
+                ColRender = new PivotTableHeaderRender<T>(Axis.Column, _pivot.RowHeaders, this);
             }
         }
 

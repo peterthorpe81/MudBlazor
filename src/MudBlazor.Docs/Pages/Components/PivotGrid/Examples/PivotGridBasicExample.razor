@@ -13,20 +13,39 @@
 
     <div class="d-flex flex-wrap mt-4">
         <MudSwitch @bind-Value="_showRowTotalsForSingleValues" Color="Color.Primary">Show Row Totals For Single Values</MudSwitch>
-        <MudRadioGroup T="OutputPosition" @bind-Value="_rowTotalPosition">
-            <MudRadio Dense="true" Value="@OutputPosition.Below" Color="Color.Primary">Below</MudRadio>
-            <MudRadio Dense="true" Value="@OutputPosition.Above" Color="Color.Tertiary">Above</MudRadio>
-            <MudRadio Dense="true" Value="@OutputPosition.None">None</MudRadio>
+        <MudRadioGroup T="TotalPosition" @bind-Value="_rowTotalPosition">
+            <MudRadio Dense="true" Value="@TotalPosition.Start" Color="Color.Primary">Start</MudRadio>
+            <MudRadio Dense="true" Value="@TotalPosition.End" Color="Color.Tertiary">End</MudRadio>
+            <MudRadio Dense="true" Value="@TotalPosition.None">None</MudRadio>
         </MudRadioGroup>
     </div>
     <div class="d-flex flex-rows flex-wrap mr-4">
         <MudSwitch @bind-Value="_showColTotalsForSingleValues" Color="Color.Primary">Show Col Totals For Single Values</MudSwitch>
-        <MudRadioGroup T="OutputPosition" @bind-Value="_colTotalPosition">
-            <MudRadio Dense="true" Value="@OutputPosition.Below" Color="Color.Primary">Below</MudRadio>
-            <MudRadio Dense="true" Value="@OutputPosition.Above" Color="Color.Tertiary">Above</MudRadio>
-            <MudRadio Dense="true" Value="@OutputPosition.None">None</MudRadio>
+        <MudRadioGroup T="TotalPosition" @bind-Value="_colTotalPosition">
+            <MudRadio Dense="true" Value="@TotalPosition.Start" Color="Color.Primary">Start</MudRadio>
+            <MudRadio Dense="true" Value="@TotalPosition.End" Color="Color.Tertiary">End</MudRadio>
+            <MudRadio Dense="true" Value="@TotalPosition.None">None</MudRadio>
         </MudRadioGroup>
     </div>
+
+
+     <div class="d-flex flex-rows flex-wrap mr-4">
+         <h3>Sub Cat</h3>
+        <MudSwitch @bind-Value="_subCatTotal" Color="Color.Primary">Single Value Totals</MudSwitch>
+
+        <MudRadioGroup T="TotalPosition" @bind-Value="_subCatTotalPosition">
+            <MudRadio Dense="true" Value="@TotalPosition.Start" Color="Color.Primary">Start</MudRadio>
+            <MudRadio Dense="true" Value="@TotalPosition.End" Color="Color.Tertiary">End</MudRadio>
+            <MudRadio Dense="true" Value="@TotalPosition.None">None</MudRadio>
+        </MudRadioGroup>
+
+        <MudRadioGroup T="Axis" @bind-Value="_subCatAxis">
+            <MudRadio Dense="true" Value="@Axis.Row" Color="Color.Primary">Row</MudRadio>
+            <MudRadio Dense="true" Value="@Axis.Column" Color="Color.Tertiary">Column</MudRadio>
+            <MudRadio Dense="true" Value="@Axis.None">None</MudRadio>
+        </MudRadioGroup>
+    </div>
+
 
 
     <div class="d-flex flex-rows flex-wrap mr-4">
@@ -34,13 +53,24 @@
         <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Refresh">Refresh</MudButton>
     </div>
 
-    <MudPivotGrid T="PivotData" Items="@_PivotData" Columns=@Columns Rows="@Rows" Measures="@Measures"
+    <MudPivotGrid T="PivotData" Items="@_PivotData" Measures="@Measures"
                   RowTotalPosition=_rowTotalPosition ColTotalPosition=_colTotalPosition Color="Color.Secondary" Dense="true" Hover="true"
                   MeasureArrangement="MeasureArrangementType.Horizontal" ShowHeaderTitles="_showHeaderTitles"
-                  HighlightCrossedTotals="_highlightCrossedTotals"> 
-              <Fields>
-                <Field Property="x => x.Category" Title="Category" />
-            </Fields>
+                  HighlightCrossedTotals="_highlightCrossedTotals" 
+                  ShowRowTotalsForSingleValues="_showRowTotalsForSingleValues"
+                  ShowColTotalsForSingleValues="_showColTotalsForSingleValues">
+        <Fields>
+                    <Field Property="x => x.Category" Title="Category" Axis="Axis.Row" />
+
+            <Field Property="x => x.SubCategory" Title="Sub Category" Axis=_subCatAxis
+                   ShowTotalsForSingleValues=_subCatTotal TotalPosition=_subCatTotalPosition />
+
+            <Field Property="x => x.SubCategory2" Title="Sub Category 2" Axis="Axis.Row" ShowTotalsForSingleValues=_subCatTotal />
+                    <Field Property="x => x.Type" Title="Type" Axis="Axis.Column" />
+                    <Field Property="x => x.SubType" Title="Sub Type" Axis="Axis.Column" />
+                    <Field Property="x => x.Value" Title="Value" Axis="Axis.None" />
+            <Field Property="x => x.Value2" Title="Value2" Axis="Axis.None" />
+                  </Fields>
 
               </MudPivotGrid>
 
@@ -57,12 +87,17 @@
     public bool _showColTotalsForSingleValues = false;
     public bool _showHeaderTitles = true;
     public bool _highlightCrossedTotals = true;
-    public OutputPosition _rowTotalPosition = OutputPosition.Below;
-    public OutputPosition _colTotalPosition = OutputPosition.Below;
+    public TotalPosition _rowTotalPosition = TotalPosition.End;
+    public TotalPosition _colTotalPosition = TotalPosition.End;
+
+
+    public bool _subCatTotal = true;
+    public Axis _subCatAxis = Axis.Row;
+    public TotalPosition _subCatTotalPosition = TotalPosition.End;
 
     private IEnumerable<PivotData> _PivotData = new List<PivotData>()
         {
-          new PivotData("A","A1","A1A","C","C1",38,37)/*,
+          new PivotData("A","A1","A1A","C","C1",38,37),
 new PivotData("A","A1","A1A","C","C1",40,41),
 new PivotData("A","A1","A1B","C","C1",37,10),
 new PivotData("A","A2","A2A","C","C1",36,39),
@@ -106,7 +141,8 @@ new PivotData("A","A2","A2B","D","D2",48,46),
 new PivotData("B","B1","B1A","D","D2",20,0),
 new PivotData("B","B1","B1B","D","D2",25,48),
 new PivotData("B","B2","B2A","D","D2",39,33),
-new PivotData("B","B2","B2B","D","D2",39,10)*/
+new PivotData("B","B2","B2B","D","D2",39,10),
+new PivotData("E","E1","E1A","D","D2",39,10)
             /*new PivotData("A", "A1", "AX", "1", "1A", 20, 1),
             new PivotData("A", "A1", "AT", "1", "1C", 20, 1),
             new PivotData("A", "A2", "AY", "1", "1A", 19, 2),
@@ -165,7 +201,8 @@ new PivotData("A","A2","A2B","D","D2",48,46),
 new PivotData("B","B1","B1A","D","D2",20,0),
 new PivotData("B","B1","B1B","D","D2",25,48),
 new PivotData("B","B2","B2A","D","D2",39,33),
-new PivotData("B","B2","B2B","D","D2",39,10)
+new PivotData("B","B2","B2B","D","D2",39,10),
+new PivotData("E","E1","E1A","D","D2",39,10)
             /*new PivotData("A", "A1", "AX", "1", "1A", 20, 1),
             new PivotData("A", "A1", "AT", "1", "1C", 20, 1),
             new PivotData("A", "A2", "AY", "1", "1A", 19, 2),
@@ -178,25 +215,25 @@ new PivotData("B","B2","B2B","D","D2",39,10)
             new PivotData("C", "C3", "AY", "1", "1A", 12, 9)*/
         };
 
-    public List<PivotColumn<PivotData>> Columns { get; set; } = new List<PivotColumn<PivotData>>();
-    public List<PivotColumn<PivotData>> Rows { get; set; } = new List<PivotColumn<PivotData>>();
+    //public List<PivotColumn<PivotData>> Columns { get; set; } = new List<PivotColumn<PivotData>>();
+    //public List<PivotColumn<PivotData>> Rows { get; set; } = new List<PivotColumn<PivotData>>();
     public List<PivotMeasure<PivotData>> Measures { get; set; } = new List<PivotMeasure<PivotData>>();
 
 
-    public List<PivotColumn<PivotData>> Columns2 { get; set; } = new List<PivotColumn<PivotData>>();
-    public List<PivotColumn<PivotData>> Rows2 { get; set; } = new List<PivotColumn<PivotData>>();
+    //public List<PivotColumn<PivotData>> Columns2 { get; set; } = new List<PivotColumn<PivotData>>();
+    //public List<PivotColumn<PivotData>> Rows2 { get; set; } = new List<PivotColumn<PivotData>>();
     public List<PivotMeasure<PivotData>> Measures2 { get; set; } = new List<PivotMeasure<PivotData>>();
 
     public MudPivotGrid<PivotData> pivot = null;
     public MudPivotGrid<PivotData> pivot2 = null;
     public bool ready = false;
 
-    int rr = 99;
+    //int rr = 99;
     public Task Refresh()
     {
-        _PivotData.First().Category = rr.ToString();
-        _PivotData.First().Type = rr.ToString();
-        rr++;
+       // _PivotData.First().Category = rr.ToString();
+       // _PivotData.First().Type = rr.ToString();
+       // rr++;
         StateHasChanged();
         return Task.CompletedTask;
     }
@@ -205,19 +242,19 @@ new PivotData("B","B2","B2B","D","D2",39,10)
     {
         await Task.Yield();
 
-        Rows = PivotColumn<PivotData>.Build(new PivotAxisRenderOption() { TotalPosition = _rowTotalPosition, ShowTotalsForSingleValues = _showRowTotalsForSingleValues },
-            nameof(PivotData.Category), nameof(PivotData.SubCategory), nameof(PivotData.SubCategory2));
+       // Rows = PivotColumn<PivotData>.Build(new PivotAxisRenderOption() { TotalPosition = _rowTotalPosition, ShowTotalsForSingleValues = _showRowTotalsForSingleValues },
+        //    nameof(PivotData.Category), nameof(PivotData.SubCategory), nameof(PivotData.SubCategory2));
 
-        Columns = PivotColumn<PivotData>.Build(new PivotAxisRenderOption() { TotalPosition = _colTotalPosition, ShowTotalsForSingleValues = _showColTotalsForSingleValues },
-            nameof(PivotData.Type), nameof(PivotData.SubType));
+       // Columns = PivotColumn<PivotData>.Build(new PivotAxisRenderOption() { TotalPosition = _colTotalPosition, ShowTotalsForSingleValues = _showColTotalsForSingleValues },
+        //    nameof(PivotData.Type), nameof(PivotData.SubType));
 
         Measures = PivotMeasure<PivotData>.Build(nameof(PivotData.Value), nameof(PivotData.Value2));
 
-        Rows2 = PivotColumn<PivotData>.Build(new PivotAxisRenderOption() { TotalPosition = _rowTotalPosition, ShowTotalsForSingleValues = _showRowTotalsForSingleValues },
-            nameof(PivotData.Category), nameof(PivotData.SubCategory), nameof(PivotData.SubCategory2));
+        //Rows2 = PivotColumn<PivotData>.Build(new PivotAxisRenderOption() { TotalPosition = _rowTotalPosition, ShowTotalsForSingleValues = _showRowTotalsForSingleValues },
+        //    nameof(PivotData.Category), nameof(PivotData.SubCategory), nameof(PivotData.SubCategory2));
 
-        Columns2 = PivotColumn<PivotData>.Build(new PivotAxisRenderOption() { TotalPosition = _colTotalPosition, ShowTotalsForSingleValues = _showColTotalsForSingleValues },
-            nameof(PivotData.Type), nameof(PivotData.SubType));
+       // Columns2 = PivotColumn<PivotData>.Build(new PivotAxisRenderOption() { TotalPosition = _colTotalPosition, ShowTotalsForSingleValues = _showColTotalsForSingleValues },
+        //    nameof(PivotData.Type), nameof(PivotData.SubType));
 
         Measures2 = PivotMeasure<PivotData>.Build(nameof(PivotData.Value), nameof(PivotData.Value2));
         /*var measure = PivotMeasure<PivotData>.Sum(nameof(PivotData.Value));

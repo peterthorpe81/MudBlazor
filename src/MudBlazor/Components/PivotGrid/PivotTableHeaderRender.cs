@@ -15,14 +15,14 @@ namespace MudBlazor
         public int MaxDepth => Headers.Count;
         public string HeaderTitle(int depth) => Headers[depth].PropertyName;
 
-        public PivotTableHeaderRender(HeaderType headerType, IEnumerable<PivotColumn<T>> headers, MudPivotGrid<T> grid) {
+        public PivotTableHeaderRender(Axis headerType, IEnumerable<PivotColumn<T>> headers, MudPivotGrid<T> grid) {
             Contract.Requires(headers != null);
             Contract.Requires(grid != null);
 
             //OutputPosition totalPosition = headerType == HeaderType.Column ? grid.ColumnTotalPosition : grid.RowTotalPosition;
             Headers = headers.ToList();
             var headerOption = grid.Header[headerType];
-            if (headerOption.TotalPosition == OutputPosition.Above) {
+            if (headerOption.TotalPosition == TotalPosition.Start) {
                 rootCells.Add(new PivotTableTotalColumnRender<T>(null, grid, headerOption));
             }
 
@@ -38,7 +38,7 @@ namespace MudBlazor
             {
                 rootCells.Add(new PivotTableTotalColumnRender<T>(null, grid, headerOption));
             }
-            if (headerOption.TotalPosition == TotalPosition.Start) {
+            if (headerOption.TotalPosition == TotalPosition.End) {
                 rootCells.Add(new PivotTableTotalColumnRender<T>(null, grid, headerOption));
             }
         }

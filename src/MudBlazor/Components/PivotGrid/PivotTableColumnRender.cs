@@ -59,15 +59,14 @@ namespace MudBlazor
                 return;
             //test
             if ((currentLevelOption.ShowTotalsForSingleValues || Cell.Children.Count() > 1)
-                && currentLevelOption.TotalPosition == OutputPosition.Above) {
+                && currentLevelOption.TotalPosition == TotalPosition.Start) {
                 Children.Add(new PivotTableTotalColumnRender<T>(Cell, grid, currentLevelOption, this));
             }
             foreach (var child in Cell.Children) {
                 Children.Add(new PivotTableColumnRender<T>(child, grid, currentLevelOption, this));
             }
-            if (
-            (currentLevelOption.ShowTotalsForSingleValues || Cell.Children.Count() > 1)
-                && currentLevelOption.TotalPosition == OutputPosition.Below) {
+            if ((currentLevelOption.ShowTotalsForSingleValues || Cell.Children.Count() > 1)
+                && currentLevelOption.TotalPosition == TotalPosition.End) {
                 Children.Add(new PivotTableTotalColumnRender<T>(Cell, grid, currentLevelOption, this));
             }
         }

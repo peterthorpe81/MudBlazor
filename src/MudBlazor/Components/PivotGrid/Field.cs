@@ -19,40 +19,9 @@ namespace MudBlazor
 {
 
 #nullable enable
-    public abstract class Field<T> : MudComponentBase
+    public class Field<T, TProperty> : BaseField<T>
     {
-
-        [Parameter] public string? Title { get; set; }
-
-        [Parameter]
-        public string? Format { get; set; }
-
-        protected internal virtual LambdaExpression? PropertyExpression { get; }
-
-        public virtual string? PropertyName { get; }
-
-        protected internal abstract object? PropertyFunc(T item);
-
-        protected internal virtual Type? PropertyType { get; }
-    }
-
-    public class Field<T, TProperty> : Field<T>
-    {
-
         private readonly Guid _id = Guid.NewGuid();
-
-        [CascadingParameter]
-        public MudPivotGrid<T>? PivotGrid { get; set; }
-
-
-        [Parameter]
-        public string TotalTitle { get; set; } = "Total";
-
-        [Parameter]
-        public OutputPosition TotalPosition { get; set; } = OutputPosition.Below;
-
-        [Parameter]
-        public bool ShowTotalsForSingleValues { get; set; } = false;
 
         private string? _propertyName;
         private Func<T, object?>? _cellContentFunc;
@@ -68,6 +37,7 @@ namespace MudBlazor
         protected override void OnParametersSet()
         {
             base.OnParametersSet();
+
             // We have to do a bit of pre-processing on the lambda expression. Only do that if it's new or changed.
             if (_lastAssignedProperty != Property)
             {
