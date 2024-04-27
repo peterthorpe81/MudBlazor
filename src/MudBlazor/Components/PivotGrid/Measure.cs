@@ -18,55 +18,72 @@ using MudBlazor.Utilities.Expressions;
 
 namespace MudBlazor
 {
-    public class Measure<T, TProperty> : BaseMeasure<T>
+    public class Measure<T> : BaseMeasure<T>
     {
 #nullable enable
-        private readonly Guid _id = Guid.NewGuid();
 
-        private string? _aggregateName;
-        private Func<IEnumerable<TProperty>, decimal?>? _cellContentFunc;
-
-        private Func<IEnumerable<TProperty>, decimal>? _compiledAggregateFunc;
+        private string? _measureName;
+       // private Func<T, decimal?>? _cellContentFunc;
 
 
-        private Expression<Func<IEnumerable<TProperty>, decimal>>? _lastAssignedAggregate;
-        private Expression<Func<IEnumerable<TProperty>, decimal>>? _compiledAggregateFuncFor;
+
+
+        [Parameter]
+        [EditorRequired] 
+        public Expression<Func<IEnumerable<decimal>, decimal>> Aggregate { get; set; } = Expression.Lambda<Func<IEnumerable<decimal>, decimal>>(Expression.Default(typeof(decimal)), Expression.Parameter(typeof(IEnumerable<decimal>)));
+        //Expression.Lambda<Func<T, TProperty>>(Expression.Default(typeof(TProperty)), Expression.Parameter(typeof(T)));
 
         [Parameter]
         [EditorRequired]
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-        public Expression<Func<IEnumerable<TProperty>, decimal>> Aggregate { get; set; }
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-                              //= Expression.Lambda<Func<IEnumerable<TProperty>, decimal>>(Expression.Default(typeof(TProperty)), Expression.Parameter(typeof(T)));
+        public Expression<Func<T, decimal>> Value { get; set; } = Expression.Lambda<Func<T, decimal>>(Expression.Default(typeof(decimal)), Expression.Parameter(typeof(T)));
 
 
+        private Expression<Func<T, decimal>>? _lastAssignedValue;
+        private Expression<Func<IEnumerable<decimal>, decimal>>? _lastAssignedAggregate;
         protected override void OnParametersSet()
         {
             base.OnParametersSet();
 
             // We have to do a bit of pre-processing on the lambda expression. Only do that if it's new or changed.
+            if (_lastAssignedValue != Value)
+            {
+                _lastAssignedValue = Value;
+                Value.Compile();
+                //var compiledValueExpression = Value.Compile();
+                //_cellContentFunc = item => compiledValueExpression(item);
+            }
             if (_lastAssignedAggregate != Aggregate)
             {
                 _lastAssignedAggregate = Aggregate;
-                var compiledAggregateExpression = Aggregate.Compile();
-                _cellContentFunc = item => compiledAggregateExpression(item);
+                Aggregate.Compile();
+                //var compiledAggregateExpression = Aggregate.Compile();
+                //_cellContentFunc = item => compiledAggregateExpression(item);
             }
 
-            var aggregate = PropertyPath.Visit(Aggregate);
-            if (aggregate.IsBodyMemberExpression)
-            {
-                _aggregateName = aggregate.GetPath();
-            }
-            else
-            {
-                // Most likely this is a dynamic expression that people use as workaround https://try.mudblazor.com/snippet/cYGxuTmhyqAQeCVM
-                // We can't assign any meaningful name at all, therefore we should assign an unique ID like we do for TemplateColumn
-                _aggregateName = _id.ToString();
-            }
-            Title ??= aggregate.GetLastMemberName();
+            _measureName = $"{Value} {Aggregate}";
+            var value = PropertyPath.Visit(Value);
+            
+            Title ??= value.GetLastMemberName();
         }
 
-        protected internal override object? AggregateFunc(IEnumerable<TProperty> item)
+
+        private Func<T, decimal>? _compiledValueFunc;
+        private Expression<Func<T, decimal>>? _compiledValueFuncFor;
+        protected internal override decimal ValueFunc(T item)
+        {
+            if (_compiledValueFunc == null || _compiledValueFuncFor != Value)
+            {
+                _compiledValueFunc = Value.Compile();
+                _compiledValueFuncFor = Value;
+            }
+
+            return _compiledValueFunc(item);
+        }
+
+
+        private Func<IEnumerable<decimal>, decimal>? _compiledAggregateFunc;
+        private Expression<Func<IEnumerable<decimal>, decimal>>? _compiledAggregateFuncFor;
+        protected internal override decimal AggregateFunc(IEnumerable<decimal> item)
         {
             if (_compiledAggregateFunc == null || _compiledAggregateFuncFor != Aggregate)
             {
@@ -77,13 +94,11 @@ namespace MudBlazor
             return _compiledAggregateFunc(item);
         }
 
-        protected internal override Type AggregateType
-            => typeof(T);
 
         protected internal override LambdaExpression? AggregateExpression
             => Aggregate;
 
-        public override string? AggregateName => _aggregateName;
+        public override string? MeasureName => _measureName;
 
 
         protected override void OnInitialized()
@@ -92,6 +107,7 @@ namespace MudBlazor
             if (PivotGrid != null)
                 PivotGrid.AddMeasure(this);
         }
+
 
     }
 #nullable disable

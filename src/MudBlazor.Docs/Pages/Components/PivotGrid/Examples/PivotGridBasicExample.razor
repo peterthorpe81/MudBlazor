@@ -72,7 +72,12 @@
             <Field Property="x => x.Value2" Title="Value2" Axis="Axis.None" />
                   </Fields>
                   <Measures>
-                      <Measure Aggregate="x=> x.  .Sum()" Title="Value"></Measure>
+            <Measure Value="x => Convert.ToDecimal(x.Value)" Aggregate="x=> x.Sum()" Title="Value 1"></Measure>
+            <Measure Value="x => Convert.ToDecimal(x.Value2)" Aggregate="x=> x.Sum()" Title="Value 2"></Measure>
+                      <DivisorMeasure NumeratorValue="x => Convert.ToDecimal(x.Value)" NumeratorAggregate="x=> x.Sum()"
+                            DenominatorValue="x => Convert.ToDecimal(x.Value2)" DenominatorAggregate="x=> x.Sum()"
+                             Format="p2">
+                      </DivisorMeasure>
                   </Measures>
 
               </MudPivotGrid>

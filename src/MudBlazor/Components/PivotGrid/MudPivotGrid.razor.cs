@@ -357,10 +357,15 @@ namespace MudBlazor
                     }));
             }
 
+            _measures = new List<PivotMeasure<T>>();
             foreach (var measure in MeasureSet)
             {
-                var m = new PivotMeasure<T>(measure.AggregateName, title: measure.Title);
-                m.aggregate = measure.AggregateFunc; 
+                var m = new PivotMeasure<T>(measure.MeasureName, title: measure.Title);
+                m.ValueGetter = measure.ValueFunc;
+                if (measure is DivisorMeasure<T>)
+                    m.aggregate = measure.ComplexAggregateFunc;
+                else
+                    m.aggregate = measure.AggregateFunc; 
                 m.Format = measure.Format;
                
                 _measures.Add(m);

@@ -20,6 +20,8 @@ namespace MudBlazor
 #nullable enable
     public abstract partial class BaseMeasure<T> : MudComponentBase
     {
+        public virtual string? MeasureName { get; }
+
         [Parameter]
         public string? Title { get; set; }
 
@@ -31,11 +33,14 @@ namespace MudBlazor
 
         protected internal virtual LambdaExpression? AggregateExpression { get; }
 
-        public virtual string? AggregateName { get; }
+        protected internal abstract decimal AggregateFunc(IEnumerable<decimal> item);
+        protected internal virtual decimal ComplexAggregateFunc(IEnumerable<decimal> item) => throw new NotImplementedException();
 
-        protected internal abstract object AggregateFunc(IEnumerable<TProperty> item);
+        protected internal virtual LambdaExpression? ValueExpression { get; }
 
-        protected internal virtual Type? AggregateType { get; }
+        protected internal abstract decimal ValueFunc(T item);
+
+        //protected internal virtual Type? AggregateType { get; }
     }
 #nullable disable
 }
