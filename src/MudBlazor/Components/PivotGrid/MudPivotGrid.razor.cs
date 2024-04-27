@@ -8,6 +8,7 @@ using System.Reflection.PortableExecutable;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
+using MudBlazor.Components;
 using MudBlazor.Pivot;
 using MudBlazor.Utilities;
 
@@ -360,15 +361,23 @@ namespace MudBlazor
             _measures = new List<PivotMeasure<T>>();
             foreach (var measure in MeasureSet)
             {
-                var m = new PivotMeasure<T>(measure.MeasureName, title: measure.Title);
-                m.ValueGetter = measure.ValueFunc;
-                if (measure is DivisorMeasure<T>)
-                    m.aggregate = measure.ComplexAggregateFunc;
+                if (measure is ComplexMeasure<T>)
+                {
+                    var dm = measure as ComplexMeasure<T>;
+                    var m = new ComplexPivotMeasure<T>(dm.MeasureName, dm.ComplexAggregateFunc, dm.measures);
+                    m.ValueGetter = measure.ValueFunc;
+                    m.Format = measure.Format;
+                    _measures.Add(m);
+                }
                 else
-                    m.aggregate = measure.AggregateFunc; 
-                m.Format = measure.Format;
+                {
+                    var m = new PivotMeasure<T>(measure.MeasureName, title: measure.Title);
+                    m.ValueGetter = measure.ValueFunc;
+                    m.aggregate = measure.AggregateFunc;
+                    m.Format = measure.Format;
+                    _measures.Add(m);
+                }
                
-                _measures.Add(m);
             }
 
             if (Items != null)

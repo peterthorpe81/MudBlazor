@@ -11,6 +11,7 @@ using System.Linq.Expressions;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
+using MudBlazor.Components;
 using MudBlazor.Interfaces;
 using MudBlazor.Pivot;
 using MudBlazor.State;
@@ -19,7 +20,7 @@ using MudBlazor.Utilities.Expressions;
 
 namespace MudBlazor
 {
-    public class DivisorMeasure<T> : BaseMeasure<T>
+    public class DivisorMeasure<T> : ComplexMeasure<T>
     {
 #nullable enable
 
@@ -51,35 +52,39 @@ namespace MudBlazor
         private Expression<Func<IEnumerable<decimal>, decimal>>? _lastAssignedDenominatorAggregate;
 
 
-        private PivotMeasure<T>? numeratorMeasure { get; set; }
-        private PivotMeasure<T>? denominatorMeasure { get; set; }
+        internal PivotMeasure<T>? NumeratorMeasure { get; private set; }
+        internal PivotMeasure<T>? DenominatorMeasure { get; private set; }
 
         protected override void OnParametersSet()
         {
             base.OnParametersSet();
+            NumeratorMeasure = new PivotMeasure<T>("Numerator");
+            DenominatorMeasure = new PivotMeasure<T>("Denominator");
 
-            numeratorMeasure = new PivotMeasure<T>("Numerator");
-            denominatorMeasure = new PivotMeasure<T>("Denominator");
+            measures = new PivotMeasure<T>[2];
+            measures[0] = NumeratorMeasure;
+            measures[1] = DenominatorMeasure;
+
             // We have to do a bit of pre-processing on the lambda expression. Only do that if it's new or changed.
             if (_lastAssignedNumeratorValue != NumeratorValue)
             {
                 _lastAssignedNumeratorValue = NumeratorValue;
-                numeratorMeasure.ValueGetter = NumeratorValue.Compile();
+                NumeratorMeasure.ValueGetter = NumeratorValue.Compile();
             }
             if (_lastAssignedNumeratorAggregate != NumeratorAggregate)
             {
                 _lastAssignedNumeratorAggregate = NumeratorAggregate;
-                numeratorMeasure.aggregate = NumeratorAggregate.Compile();
+                NumeratorMeasure.aggregate = NumeratorAggregate.Compile();
             }
             if (_lastAssignedDenominatorValue != DenominatorValue)
             {
                 _lastAssignedDenominatorValue = DenominatorValue;
-                denominatorMeasure.ValueGetter = DenominatorValue.Compile();
+                DenominatorMeasure.ValueGetter = DenominatorValue.Compile();
             }
             if (_lastAssignedDenominatorAggregate != DenominatorAggregate)
             {
                 _lastAssignedDenominatorAggregate = DenominatorAggregate;
-                denominatorMeasure.aggregate = DenominatorAggregate.Compile();
+                DenominatorMeasure.aggregate = DenominatorAggregate.Compile();
             }
 
             _measureName = $"{NumeratorValue} {NumeratorAggregate} {DenominatorValue} {DenominatorAggregate}";
@@ -90,22 +95,13 @@ namespace MudBlazor
 
         protected internal override decimal ValueFunc(T item)
         {
-            decimal? n = numeratorMeasure?.ValueGetter.Invoke(item);
-            decimal? d = denominatorMeasure?.ValueGetter.Invoke(item);
+            decimal? n = NumeratorMeasure?.ValueGetter.Invoke(item);
+            decimal? d = DenominatorMeasure?.ValueGetter.Invoke(item);
 
             if (n is null || d is null || d == 0)
                 return 0;
 
             return n.Value / d.Value;
-
-            // denominatorMeasure.ValueGetter
-
-            /*var values = new List<decimal>();
-            foreach (var ms in measure.measures)
-            {
-                values.Add(GetValue(row, col, ms));
-            }
-            return measure.values_aggregate(values.ToArray());*/
         }
 
         protected internal override decimal AggregateFunc(IEnumerable<decimal> item)
