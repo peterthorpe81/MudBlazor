@@ -4,4 +4,13 @@
     <CompilerVisibleProperty Include="MudAllowedAttributePattern" />
     <CompilerVisibleProperty Include="MudIllegalParameters" />
   </ItemGroup>
+
+  <PropertyGroup>
+    <MudTasksAssembly Condition=" '$(Configuration)' != '' ">$(OutputPath)..\MudBlazor.Tasks\bin\$(Configuration)\netstandard2.0\MudBlazor.Tasks.dll</MudTasksAssembly>
+    <MudTasksAssembly Condition=" '$(Configuration)' == '' ">$(MSBuildThisFileDirectory)..\MudBlazor.Tasks\bin\Debug\netstandard2.0\MudBlazor.Tasks.dll</MudTasksAssembly>
+  </PropertyGroup>
+
+  <UsingTask TaskName="Mudblazor.Tasks.MudCreateSCSS" AssemblyFile="$(MudTasksAssembly)" />
+
+  
 </Project>

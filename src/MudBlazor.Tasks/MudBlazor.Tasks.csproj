@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AspNetCore.SassCompiler" Version="1.72.0" />
+    <PackageReference Include="Microsoft.Build.Framework" Version="17.10.4" />
+    <PackageReference Include="Microsoft.Build.Utilities.Core" Version="17.10.4" />
+  </ItemGroup>
+
+</Project>

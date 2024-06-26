@@ -52,6 +52,14 @@
     <MudIllegalParameters>V7IgnoreCase</MudIllegalParameters>
     <MudDebugAnalyzer>false</MudDebugAnalyzer>
   </PropertyGroup>
+  
+  <!--add tasks-->
+  <ItemGroup>
+    <ProjectReference Include="..\MudBlazor.Tasks\MudBlazor.Tasks.csproj" ReferenceOutputAssembly="true" PrivateAssets="All" />
+  </ItemGroup>
+ 
+  
+  
 
   <!--Is this a rebuild - Dont clean generated files as this breaks rebuild behaviour-->
   <Target Name="ShouldCleanGeneratedFiles" BeforeTargets="BeforeRebuild">
@@ -102,9 +110,14 @@
   <PropertyGroup>
     <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);_AddAnalyzersToOutput</TargetsForTfmSpecificContentInPackage>
   </PropertyGroup>
+
+  
   
   <!--Add analyzer to build output so it works transitively -->
   <Target Name="_AddAnalyzersToOutput">
+    <ItemGroup>
+      <None Include="..\MudBlazor.Tasks\bin\$(configuration)\netstandard2.0\MudBlazor.Tasks.dll" Pack="true" PackagePath="lib\$(TargetFramework)" Visible="true" />
+    </ItemGroup>
     <!--Limit to one copy (MudBlazor is multi targeted) analyzers are .net standard 2.0 -->
     <ItemGroup Condition=" '$(TargetFramework)' == 'net8.0' ">
       <TfmSpecificPackageFile Include="$(OutputPath)\$(AssemblyName).Analyzers.dll" PackagePath="analyzers/dotnet/cs" />
