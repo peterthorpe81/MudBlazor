@@ -1,7 +1,11 @@
 ﻿@namespace MudBlazor
 @inherits MudComponentBase
 
-<MudDialog @attributes="UserAttributes">
+@{
+#nullable enable
+}
+
+<MudDialog @attributes="UserAttributes" Class="@Classname">
     <TitleContent>
         @if (TitleContent is null)
         {

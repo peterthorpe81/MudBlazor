@@ -89,7 +89,7 @@
         using var stream = new MemoryStream();
         var writer = new StreamWriter(stream);
         //header
-        foreach (var column in grid.RenderedColumns.Where(x => !x.State.Hidden))
+        foreach (var column in grid.RenderedColumns.Where(x => !x.Hidden))
         {
             await writer.WriteAsync(column.Title);
             await writer.WriteAsync(',');
@@ -99,7 +99,7 @@
         //rows
         foreach (var item in grid.FilteredItems)
         {
-            foreach (var column in grid.RenderedColumns.Where(x => !x.State.Hidden))
+            foreach (var column in grid.RenderedColumns.Where(x => !x.Hidden))
             {
                 var cell = column.GetCell(item).ComputedValue;
                 await writer.WriteAsync((cell is IFormattable) ? (((IFormattable)cell)?.ToString(column.Format, column.Culture)) : cell?.ToString());
@@ -133,7 +133,7 @@
         await writer.WriteLineAsync("</head><body>");
 
         await writer.WriteLineAsync("<table class='mud-table-root'><thead class='mud-table-head'><tr class='mud-table-row'>");
-        foreach (var column in grid.RenderedColumns.Where(x => !x.State.Hidden))
+        foreach (var column in grid.RenderedColumns.Where(x => !x.Hidden))
         {
             await writer.WriteAsync("<th class='mud-table-cell'>");
             await writer.WriteAsync(column.Title);
@@ -151,7 +151,7 @@
             var rowStyle = new StyleBuilder().AddStyle(grid.RowStyle).AddStyle(grid.RowStyleFunc?.Invoke(item, 0)).Build();
 
             await writer.WriteAsync("<tr class='mud-table-row {rowClass}' Style='{rowStyle}'>");
-            foreach (var column in grid.RenderedColumns.Where(x => !x.State.Hidden))
+            foreach (var column in grid.RenderedColumns.Where(x => !x.Hidden))
             {
                 var cell = column.GetCell(item);
                 await writer.WriteAsync($"<td data-label='{column.Title} ' class='{cell.ComputedClass}' style='{cell.ComputedStyle}'>");
