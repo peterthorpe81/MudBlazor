@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
+    <Version>2.6.3</Version>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageIcon>Nuget.png</PackageIcon>
     <Company>MudBlazor</Company>
@@ -112,6 +113,11 @@
       <TfmSpecificPackageFile Include="..\Directory.Build.targets" Pack="true" PackagePath="build\$(PackageId).targets" />
     </ItemGroup>
   </Target>
+
+  <!--Include scss in nuget tools folder -->
+  <ItemGroup>
+    <Content Include="Styles/**/*.*" Pack="true" PackagePath="tools/Styles" PackageCopyToOutput="true" />
+  </ItemGroup>
   
   <!--Dont Include in build output-->
   <ItemGroup>
@@ -136,6 +142,7 @@
 
   <ItemGroup>
     <ProjectReference Include="../MudBlazor.SourceGenerator/MudBlazor.SourceGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+    <ProjectReference Include="../MudBlazor.Tasks/MudBlazor.Tasks.csproj" />
   </ItemGroup>
 
   <ItemGroup>

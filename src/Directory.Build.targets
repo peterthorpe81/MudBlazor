@@ -3,5 +3,20 @@
     <CompilerVisibleProperty Include="MudDebugAnalyzer" />
     <CompilerVisibleProperty Include="MudAllowedAttributePattern" />
     <CompilerVisibleProperty Include="MudIllegalParameters" />
+    <CompilerVisibleProperty Include="MudCustomCSSBuildPath" />
   </ItemGroup>
+  <!--
+  <Target Name="CopyFiles" BeforeTargets="PrepareForBuild" Condition=" '$(MudCustomCSSBuildPath)' != '' ">
+    <ItemGroup>
+      <File Include="$(MSBuildThisFileDirectory)..\tools\Styles\**\*.*"></File>
+    </ItemGroup>
+    <Copy SourceFiles="@(File)"  DestinationFolder="$(MudCustomCSSBuildPath)\%(RecursiveDir)" SkipUnchangedFiles="true"></Copy>
+  </Target>
+-->
+  <PropertyGroup>
+    <MudBlazorTasksAssembly>$(MSBuildThisFileDirectory)MudBlazor.Tasks\bin\$(Configuration)\netstandard2.0\MudBlazor.Tasks.dll</MudBlazorTasksAssembly>
+  </PropertyGroup>
+  
+  <UsingTask TaskName="MudBlazor.Tasks.MudCreateSCSS" AssemblyFile="$(MudBlazorTasksAssembly)" TaskFactory="TaskHostFactory" />
+
 </Project>

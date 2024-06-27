@@ -1,21 +1,64 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+﻿<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <RootNamespace>MudBlazor.Analyzers.TestComponents</RootNamespace>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <PublishTrimmed>true</PublishTrimmed>
+    <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
   </PropertyGroup>
 
+
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.6" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.6" PrivateAssets="all" />
+  </ItemGroup>
+  
   <ItemGroup>
     <ProjectReference Include="..\MudBlazor\MudBlazor.csproj" />
   </ItemGroup>
   
   <ItemGroup>
     <SupportedPlatform Include="browser" />
-  </ItemGroup>  
+  </ItemGroup>   
   
   <ItemGroup>
-    <Folder Include="wwwroot\" />
+    <PackageReference Include="AspNetCore.SassCompiler" Version="1.72.0" />
   </ItemGroup>
+
+  <Target Name="PublishSCSS" AfterTargets="ILLink;" Condition="'$(DesignTimeBuild)' != 'true'">
+    <Message Text="linked it it" Importance="High" />
+    <MudCreateScss SCSSFolder="$([System.IO.Path]::GetFullPath('$(MSBuildProjectDirectory)/../MudBlazor/Styles'))" 
+                   TempFolder="$([System.IO.Path]::GetFullPath('$(IntermediateOutputPath)/SCSSBuilder'))" 
+                   MudBlazorDllPath="$([System.IO.Path]::GetFullPath('$(IntermediateOutputPath)/linked/Mudblazor.dll'))" 
+                   OutputCssFile="$([System.IO.Path]::GetFullPath('$(PublishDir)/wwwroot/css/MudBlazorOptimized.css'))" />
+    <!-- <MudCreateScss SCSSFolder="$([System.IO.Path]::GetFullPath('$(PkgMudblazor)/tools/Styles'))" 
+                   TempFolder="$([System.IO.Path]::GetFullPath('$(IntermediateOutputPath)/SCSSBuilder'))"
+                  MudBlazorDllPath="$([System.IO.Path]::GetFullPath('$(OutputPath)/Mudblazor.dll'))" 
+                   OutputCssFile="$([System.IO.Path]::GetFullPath('$(OutputPath)/wwwroot/css/MudBlazorOptimized.scss'))" />-->
+  </Target>
+  
+  
+  <!-- <Target Name="CreateSCSS" AfterTargets="Build;" Condition="'$(DesignTimeBuild)' != 'true'">
+    <MudCreateScss SCSSFolder="$([System.IO.Path]::GetFullPath('$(MSBuildProjectDirectory)/../MudBlazor/Styles'))"
+                  TempFolder="$([System.IO.Path]::GetFullPath('$(IntermediateOutputPath)/SCSSBuilder'))"
+                 MudBlazorDllPath="$([System.IO.Path]::GetFullPath('$(OutputPath)/Mudblazor.dll'))"
+                  OutputCssFile="$([System.IO.Path]::GetFullPath('$(OutputPath)/wwwroot/css/MudBlazorOptimized.css'))" />-->
+   <!-- <MudCreateScss SCSSFolder="$([System.IO.Path]::GetFullPath('$(PkgMudblazor)/tools/Styles'))" 
+                   TempFolder="$([System.IO.Path]::GetFullPath('$(IntermediateOutputPath)/SCSSBuilder'))"
+                  MudBlazorDllPath="$([System.IO.Path]::GetFullPath('$(OutputPath)/Mudblazor.dll'))" 
+                   OutputCssFile="$([System.IO.Path]::GetFullPath('$(OutputPath)/wwwroot/css/MudBlazorOptimized.scss'))" />-->
+  <!--</Target>-->
+
+  <Target Name="CreateCSS" AfterTargets="PublishSCSS">
+    <Message Text="compile it" Importance="High" />
+    <CompileSass SassCompilerFile="$(IntermediateOutputPath)/SCSSBuilder/sasscompiler.json" 
+                 Command="$(SassCompilerBuildCommand)" 
+                 Snapshot="$(SassCompilerBuildSnapshot)" 
+                 Configuration="$(SassCompilerConfiguration)">
+      </CompileSass>
+  </Target>
+  
 </Project>
