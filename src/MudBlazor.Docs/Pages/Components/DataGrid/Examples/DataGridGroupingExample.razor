@@ -27,6 +27,8 @@
                 }
             </GroupTemplate>
         </PropertyColumn>
+
+        <CheckBoxPropertyColumn Property="x => x.Check" Title="Check" />
     </Columns>
     <PagerContent>
         <MudDataGridPager T="Element" />
@@ -41,7 +43,7 @@
 </div>
 
 @code {
-    IEnumerable<Element> Elements = new List<Element>();
+    List<Element> Elements = new List<Element>();
     MudDataGrid<Element> dataGrid;
     bool _customizeGroupTemplate;
     static bool _customizeGroupBy;
@@ -63,6 +65,7 @@
     protected override async Task OnInitializedAsync()
     {
         Elements = await httpClient.GetFromJsonAsync<List<Element>>("webapi/periodictable");
+        //Elements.Add(new Element() { Name = "Unknown Element" });
     }
 
     void ExpandAllGroups()

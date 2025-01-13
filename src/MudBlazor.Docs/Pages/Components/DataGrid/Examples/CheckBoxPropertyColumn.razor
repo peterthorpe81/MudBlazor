@@ -1,0 +1,32 @@
+﻿@typeparam T
+@typeparam TColumn
+@inherits PropertyColumn<T, TColumn>
+@using MudBlazor
+@namespace MudBlazor
+
+@code {
+
+    public CheckBoxPropertyColumn()
+    {
+        CellTemplate = (context) => @<MudCheckBox Value=@context.Column.CellContent(context.Item) ValueChanged=@(x => VC(x, context)) Dense="true"></MudCheckBox>;
+    }
+
+    
+    object VC(object isChecked, CellContext<T, Column<T>> context)
+    {
+        context.Column.SetProperty(context.Item, isChecked);
+
+        return isChecked;
+        //return isChecked;
+        // If the edit mode is Cell, we update immediately.
+        //if (_dataGrid.EditMode == DataGridEditMode.Cell)
+        //    await _dataGrid.CommitItemChangesAsync(context.Item);
+
+
+       // context.StringValueChangedAsync(isChecked.ToString());
+        //context.Column.CellContent
+        //_customizeGroupBy = isChecked;
+        //dataGrid.GroupItems();
+    }
+
+}

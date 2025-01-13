@@ -268,7 +268,7 @@
                                                 {
                                                     <tr class="mud-table-row">
                                                         <td class="mud-table-cell" colspan="1000">
-                                                            @ChildRowContent(new CellContext<T>(this, item))
+                                                                    @ChildRowContent(new CellContext<T, Column<T>>(this, item, RenderedColumns.First()))
                                                         </td>
                                                     </tr>
                                                 }
@@ -323,7 +323,7 @@
                                         {
                                             <tr class="mud-table-row">
                                                 <td class="mud-table-cell" colspan="1000">
-                                                    @ChildRowContent(new CellContext<T>(this, item))
+                                                            @ChildRowContent(new CellContext<T, Column<T>>(this, item, RenderedColumns.First()))
                                                 </td>
                                             </tr>
                                         }

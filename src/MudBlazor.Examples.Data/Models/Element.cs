@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 namespace MudBlazor.Examples.Data.Models
@@ -17,6 +18,8 @@ namespace MudBlazor.Examples.Data.Models
         public string? Sign { get; set; }
 
         public double Molar { get; set; }
+
+        public bool Check { get; set; }
 
         public IReadOnlyCollection<int>? Electrons { get; set; }
 

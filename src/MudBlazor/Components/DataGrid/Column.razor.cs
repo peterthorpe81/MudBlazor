@@ -21,7 +21,7 @@ namespace MudBlazor
     /// <typeparam name="T">The kind of item for this column.</typeparam>
     public abstract partial class Column<T> : MudComponentBase, IDisposable
     {
-        private static readonly RenderFragment<CellContext<T>> EmptyChildContent = _ => builder => { };
+        private static readonly RenderFragment<CellContext<T, Column<T>>> EmptyChildContent = _ => builder => { };
         internal ParameterState<bool> HiddenState { get; }
         internal ParameterState<bool> GroupingState { get; }
 
@@ -93,7 +93,7 @@ namespace MudBlazor
         /// The template used to display this column's value cells.
         /// </summary>
         [Parameter]
-        public RenderFragment<CellContext<T>> CellTemplate { get; set; }
+        public virtual RenderFragment<CellContext<T, Column<T>>> CellTemplate { get; set; }
 
         /// <summary>
         /// The template used to display this column's footer.
@@ -386,7 +386,7 @@ namespace MudBlazor
         /// The template for editing values in this cell.
         /// </summary>
         [Parameter]
-        public RenderFragment<CellContext<T>> EditTemplate { get; set; }
+        public RenderFragment<CellContext<T, Column<T>>> EditTemplate { get; set; }
 
         #endregion
 

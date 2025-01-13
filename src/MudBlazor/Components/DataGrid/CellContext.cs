@@ -13,7 +13,8 @@ namespace MudBlazor
     /// Represents the current state of a cell in a <see cref="MudDataGrid{T}"/>.
     /// </summary>
     /// <typeparam name="T">The type of item displayed in the cell.</typeparam>
-    public class CellContext<T>
+    /// <typeparam name="TColumn">The column</typeparam>
+    public class CellContext<T, TColumn> where TColumn : Column<T>
     {
         private readonly HashSet<T> _selection;
 
@@ -23,6 +24,11 @@ namespace MudBlazor
         /// The item displayed in the cell.
         /// </summary>
         public T Item { get; set; }
+
+        /// <summary>
+        /// The column displayed in the cell.
+        /// </summary>
+        public TColumn Column { get; set; }
 
         /// <summary>
         /// The behaviors which can be performed in the cell.
@@ -56,11 +62,13 @@ namespace MudBlazor
         /// </summary>
         /// <param name="dataGrid">The data grid which owns this context.</param>
         /// <param name="item">The item displayed in the cell.</param>
-        public CellContext(MudDataGrid<T> dataGrid, T item)
+        /// <param name="column">The column displayed</param>
+        public CellContext(MudDataGrid<T> dataGrid, T item, TColumn column) 
         {
             _selection = dataGrid.Selection;
             OpenHierarchies = dataGrid._openHierarchies;
             Item = item;
+            Column = column;
             Actions = new CellActions
             {
                 SetSelectedItemAsync = x => dataGrid.SetSelectedItemAsync(x, item),

@@ -18,7 +18,7 @@ namespace MudBlazor
         internal string? _valueString;
         internal double? _valueNumber;
         internal bool _editing;
-        internal CellContext<T> _cellContext;
+        internal CellContext<T, Column<T>> _cellContext;
 
         #region Computed Properties
 
@@ -62,11 +62,10 @@ namespace MudBlazor
             _dataGrid = dataGrid;
             _column = column;
             _item = item;
-
             OnStartedEditingItem();
 
             // Create the CellContext
-            _cellContext = new CellContext<T>(_dataGrid, _item);
+            _cellContext = new CellContext<T, Column<T>>(_dataGrid, _item, _column);
         }
 
         public async Task StringValueChangedAsync(string value)

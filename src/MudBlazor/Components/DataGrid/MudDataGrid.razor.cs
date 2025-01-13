@@ -847,7 +847,7 @@ namespace MudBlazor
         /// The content shown for each cell.
         /// </summary>
         [Parameter]
-        public RenderFragment<CellContext<T>> ChildRowContent { get; set; }
+        public RenderFragment<CellContext<T, Column<T>>> ChildRowContent { get; set; }
 
         /// <summary>
         /// The content shown when there are no rows to display.
