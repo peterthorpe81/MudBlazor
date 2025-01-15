@@ -27,12 +27,10 @@ namespace MudBlazor.Analyzers
         private const string Category = "Attributes/Parameters";
         public const string DebugAnalyzerProperty = "build_property.MudDebugAnalyzer";
         public const string AllowedAttributePatternProperty = "build_property.mudallowedattributepattern";
-        public const string IllegalParametersProperty = "build_property.mudillegalparameters";
 
-        public static readonly DiagnosticDescriptor ParameterDescriptor = new(DiagnosticId1, _title, _parameterMessageFormat, Category, DiagnosticSeverity.Warning, isEnabledByDefault: true, description: _description, helpLinkUri: _url.ToString());
         public static readonly DiagnosticDescriptor AttributeDescriptor = new(DiagnosticId2, _title, _attributeMessageFormat, Category, DiagnosticSeverity.Warning, isEnabledByDefault: true, description: _description, helpLinkUri: _url.ToString());
 
-        private static readonly ImmutableArray<DiagnosticDescriptor> _supportedDiagnostics = new[] { ParameterDescriptor, AttributeDescriptor }.ToImmutableArray();
+        private static readonly ImmutableArray<DiagnosticDescriptor> _supportedDiagnostics = new[] { AttributeDescriptor }.ToImmutableArray();
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => _supportedDiagnostics;
 
@@ -58,18 +56,10 @@ namespace MudBlazor.Analyzers
                     allowedAttributePattern = AllowedAttributePattern.LowerCase;
                 }
 
-                if (!global.TryGetValue(IllegalParametersProperty, out var deny)
-                    || !Enum.TryParse<IllegalParameters>(deny, out var illegalParameters))
-                {
-                    illegalParameters = IllegalParameters.V7IgnoreCase;
-                }
-
-                if (illegalParameters == IllegalParameters.Disabled && allowedAttributePattern == AllowedAttributePattern.Any)
+                if (allowedAttributePattern == AllowedAttributePattern.Any)
                     return;
 
-                var illegalParameterSet = new IllegalParameterSet(ctx.Compilation, illegalParameters);
-
-                var analyzerContext = new AnalyzerContext(ctx.Compilation, illegalParameterSet, allowedAttributePattern);
+                var analyzerContext = new AnalyzerContext(ctx.Compilation, allowedAttributePattern);
 
                 if (analyzerContext.IsValid)
                 {
@@ -83,16 +73,14 @@ namespace MudBlazor.Analyzers
         {
             private readonly IEqualityComparer<ISymbol?> _symbolComparer = new MetadataSymbolComparer();
             private readonly ConcurrentDictionary<ITypeSymbol, ComponentDescriptor> _componentDescriptors = new(SymbolEqualityComparer.Default);
-            private readonly IllegalParameterSet _illegalParameterSet;
             private readonly AllowedAttributePattern _allowedAttributePattern;
             private readonly INamedTypeSymbol? _componentBaseSymbol;
             private readonly INamedTypeSymbol? _parameterSymbol;
             private readonly INamedTypeSymbol? _renderTreeBuilderSymbol;
             private readonly INamedTypeSymbol? _mudComponentBaseType;
 
-            public AnalyzerContext(Compilation compilation, IllegalParameterSet illegalParameterSet, AllowedAttributePattern allowedAttributePattern)
+            public AnalyzerContext(Compilation compilation, AllowedAttributePattern allowedAttributePattern)
             {
-                _illegalParameterSet = illegalParameterSet;
                 _allowedAttributePattern = allowedAttributePattern;
                 _componentBaseSymbol = compilation.GetBestTypeByMetadataName("Microsoft.AspNetCore.Components.ComponentBase");
                 _parameterSymbol = compilation.GetBestTypeByMetadataName("Microsoft.AspNetCore.Components.ParameterAttribute");
@@ -179,33 +167,12 @@ namespace MudBlazor.Analyzers
             private void ValidateAttribute(OperationAnalysisContext context, IInvocationOperation invocation,
                 ComponentDescriptor? componentDescriptor, ITypeSymbol componentType, string parameterName, string className)
             {
+                //check for existence of parameter (case insensitive)
                 if (componentDescriptor is null || componentDescriptor.Parameters.Contains(parameterName))
                     return;
-                else
-                {
-                    //check illegals first                    
-                    foreach (var illegalParam in _illegalParameterSet.Parameters)
-                    {
-                        if (componentType.IsOrInheritFrom(illegalParam.Key, _symbolComparer) && illegalParam.Value.Contains(parameterName, _illegalParameterSet.Comparer))
-                        {
-                            Report(ParameterDescriptor, context, invocation, parameterName, componentDescriptor, className, _illegalParameterSet.IllegalParameters.ToString());
-                            return;
-                        }
-                    }
-
-                    switch (_allowedAttributePattern)
-                    {
-                        case AllowedAttributePattern.LowerCase when char.IsLower(parameterName, 0):
-                            return;
-                        case AllowedAttributePattern.DataAndAria when (parameterName.StartsWith("data-", StringComparison.Ordinal) || parameterName.StartsWith("aria-", StringComparison.Ordinal)):
-                            return;
-                        case AllowedAttributePattern.Any:
-                            return;
-                        default:
-                            Report(AttributeDescriptor, context, invocation, parameterName, componentDescriptor, className, _allowedAttributePattern.ToString());
-                            return;
-                    }
-                }
+                
+                if (!HTMLAttributes.Valid(parameterName, _allowedAttributePattern))
+                    Report(AttributeDescriptor, context, invocation, parameterName, componentDescriptor, className, _allowedAttributePattern.ToString());
             }
 
             private void Report(DiagnosticDescriptor diagnosticDescriptor, OperationAnalysisContext context, IInvocationOperation invocation,

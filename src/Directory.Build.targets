@@ -2,6 +2,5 @@
   <ItemGroup>
     <CompilerVisibleProperty Include="MudDebugAnalyzer" />
     <CompilerVisibleProperty Include="MudAllowedAttributePattern" />
-    <CompilerVisibleProperty Include="MudIllegalParameters" />
   </ItemGroup>
 </Project>

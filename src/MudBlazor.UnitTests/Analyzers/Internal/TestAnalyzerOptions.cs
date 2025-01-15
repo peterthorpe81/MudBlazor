@@ -13,13 +13,11 @@ namespace MudBlazor.UnitTests.Analyzers.Internal
         private TestAnalyzerOptions(Dictionary<string, string> values) => _values = values ?? [];
 
         internal static AnalyzerOptions Create(
-            IllegalParameters illegalParameters,
             AllowedAttributePattern attributeProviderAttribute,
              ImmutableArray<AdditionalText> additionalText)
         {
             var tmp = new AnalyzerOptions(additionalText, new TestAnalyzerOptions(new Dictionary<string, string>()
             {
-                [MudComponentUnknownParametersAnalyzer.IllegalParametersProperty] = illegalParameters.ToString(),
                 [MudComponentUnknownParametersAnalyzer.AllowedAttributePatternProperty] = attributeProviderAttribute.ToString()!
             }));
 

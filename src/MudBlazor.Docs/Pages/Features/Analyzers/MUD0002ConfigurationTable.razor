@@ -23,9 +23,19 @@
         <td>Only allow lower case attributes</td>
         <td><CodeInline>true</CodeInline></td>
     </tr>
+        <tr>
+            <td><CodeInline>HTMLAttributes</CodeInline></td>
+            <td>
+                Only allow valid HTML attributes and events including data-* and aria-*. 
+                Most attributes and events were obtained from
+                <MudLink Href="https://www.w3schools.com/tags/ref_attributes.asp">https://www.w3schools.com/tags/ref_attributes.asp</MudLink> 
+                and <MudLink Href="https://www.w3schools.com/jsref/dom_obj_event.asp">https://www.w3schools.com/jsref/dom_obj_event.asp</MudLink> 
+            </td>
+            <td></td>
+        </tr>
     <tr>
         <td><CodeInline>DataAndAria</CodeInline></td>
-        <td>Only allow data-* and aria-* attributes</td>
+            <td>Only allow data-*, aria-* and role attributes</td>
         <td></td>
     </tr>
     <tr>
