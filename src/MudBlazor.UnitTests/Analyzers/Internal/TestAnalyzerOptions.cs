@@ -17,10 +17,10 @@ namespace MudBlazor.UnitTests.Analyzers.Internal
              ImmutableArray<AdditionalText> additionalText, string? attributeList = null)
         {
             return new AnalyzerOptions(additionalText, new TestAnalyzerOptions(new Dictionary<string, string>()
-                {
-                    [MudComponentUnknownParametersAnalyzer.AllowedAttributePatternProperty] = attributeProviderAttribute.ToString()!,
-                    [MudComponentUnknownParametersAnalyzer.AllowedAttributeListProperty] = attributeList ?? string.Empty
-                }));
+            {
+                [MudComponentUnknownParametersAnalyzer.AllowedAttributePatternProperty] = attributeProviderAttribute.ToString()!,
+                [MudComponentUnknownParametersAnalyzer.AllowedAttributeListProperty] = attributeList ?? string.Empty
+            }));
         }
 
         private readonly Dictionary<string, string> _values;
